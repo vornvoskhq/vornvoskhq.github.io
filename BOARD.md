@@ -7,9 +7,12 @@ The Convex backend is deployed and the public noticeboard now reads from it:
 - public read endpoint (GET, CORS-restricted to this site):
   `https://glad-dalmatian-963.convex.site/public/posts`
 - dashboard: https://dashboard.convex.dev/t/msudick02/openmatter-board
-- first post seeded via a setup-token mutation; the token was rotated after use
-- posting, editing, deletion, and moderation exist only as admin-gated
-  mutations inside the private `openmatter-board` repository
+- **administration is CLI-only**: all write operations are internal functions
+  in the private `openmatter-board` repository, callable only with deployment
+  credentials — there is no public write path and no admin identity allowlist
+  to maintain
+- posting, unpublish/republish, and deletion have been exercised end-to-end;
+  every action writes an audit record
 - comments remain hard-disabled in code until moderation and rate limiting are
   tested end-to-end
 

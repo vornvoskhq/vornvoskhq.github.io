@@ -5,6 +5,13 @@ Minimal public-facing site for [openmatterlabs.org](https://openmatterlabs.org/)
 The private `dft2` and `casmi` repositories are not included here. Only selected,
 reviewed results, charts, and public notices should be published.
 
+## Mail verification (2026-09-19)
+
+Inbound delivery to `hq@openmatterlabs.org` confirmed by a real message from a
+Gmail account arriving in Zoho webmail. MX, SPF, DKIM, and DMARC records are
+all live. DMARC tightening (`p=quarantine`, then `p=reject`) is deferred until
+aggregate reports confirm clean alignment.
+
 ## Current stage
 
 This repository is intentionally static and dependency-free for the first landing-page
