@@ -1,5 +1,15 @@
 // Open Matter Labs — static site behavior.
-// No secrets belong in this file. Admin tools stay off the public site entirely.
+// No secrets belong in this file. The board backend is read-only from here:
+// posting and moderation live server-side in the private openmatter-board repo.
+
+// Read-only public endpoint of the Convex board backend (HTTP actions are
+// served on the .convex.site domain). If it is unreachable, the noticeboard
+// falls back to the bundled preview posts below.
+const BOARD_ENDPOINT =
+  "https://glad-dalmatian-963.convex.site/public/posts";
+
+// Assembly-encoded contact address. The full string never appears in HTML source.
+const EMAIL_PARTS = ["inquiries", "openmatterlabs.org"];
 
 const posts = [
   {
@@ -25,11 +35,6 @@ const posts = [
   },
 ];
 
-// Assembly-encoded contact address. The full string never appears in HTML source.
-const EMAIL_PARTS = ["hello", "openmatterlabs.org"];
-
-// Public bookmarks only. Admin tools (webmail, mail admin) are deliberately not
-// listed here — access them from your own password manager, not the public site.
 const bookmarks = [
   {
     label: "Open Matter Labs",
@@ -43,50 +48,85 @@ const bookmarks = [
   },
 ];
 
-function renderPosts() {
+function renderPost(post, board) {
+  const article = document.createElement("article");
+  article.className = "notice";
+
+  if (post.image) {
+    const image = document.createElement("img");
+    image.className = "notice-image";
+    image.src = post.image;
+    image.alt = "";
+    image.loading = "lazy";
+    article.append(image);
+  } else {
+    const placeholder = document.createElement("div");
+    placeholder.className = "notice-image";
+    placeholder.setAttribute("aria-hidden", "true");
+    article.append(placeholder);
+  }
+
+  const body = document.createElement("div");
+  body.className = "notice-body";
+  const meta = document.createElement("p");
+  meta.className = "notice-meta";
+  meta.textContent = post.date;
+  const title = document.createElement("h3");
+  title.textContent = post.title;
+  const text = document.createElement("p");
+  text.textContent = post.text;
+  body.append(meta, title, text);
+
+  if (post.link) {
+    const link = document.createElement("a");
+    link.href = post.link;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "Read more ↗";
+    body.append(link);
+  }
+
+  article.append(body);
+  board.append(article);
+}
+
+async function loadPosts() {
   const board = document.querySelector("#noticeboard");
   if (!board) return;
 
-  for (const post of posts) {
-    const article = document.createElement("article");
-    article.className = "notice";
-
-    if (post.image) {
-      const image = document.createElement("img");
-      image.className = "notice-image";
-      image.src = post.image;
-      image.alt = "";
-      image.loading = "lazy";
-      article.append(image);
-    } else {
-      const placeholder = document.createElement("div");
-      placeholder.className = "notice-image";
-      placeholder.setAttribute("aria-hidden", "true");
-      article.append(placeholder);
+  let remote = null;
+  try {
+    const response = await fetch(BOARD_ENDPOINT, {
+      headers: { Accept: "application/json" },
+    });
+    if (response.ok) {
+      const payload = await response.json();
+      if (Array.isArray(payload.posts) && payload.posts.length > 0) {
+        remote = payload.posts;
+      }
     }
+  } catch {
+    // Network/CORS failure — fall back to the bundled preview below.
+  }
 
-    const body = document.createElement("div");
-    body.className = "notice-body";
-    const meta = document.createElement("p");
-    meta.className = "notice-meta";
-    meta.textContent = post.date;
-    const title = document.createElement("h3");
-    title.textContent = post.title;
-    const text = document.createElement("p");
-    text.textContent = post.text;
-    body.append(meta, title, text);
-
-    if (post.link) {
-      const link = document.createElement("a");
-      link.href = post.link;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.textContent = "Read more ↗";
-      body.append(link);
+  if (remote) {
+    board.replaceChildren();
+    for (const post of remote) {
+      renderPost(
+        {
+          date: post.date,
+          title: post.title,
+          text: post.body,
+          image: post.imageUrl,
+          link: post.externalUrl,
+        },
+        board,
+      );
     }
-
-    article.append(body);
-    board.append(article);
+  } else {
+    for (const post of posts) {
+      renderPost(post, board);
+    }
   }
 }
 
@@ -133,6 +173,6 @@ function setupEmailReveal() {
   });
 }
 
-renderPosts();
+loadPosts();
 renderBookmarks();
 setupEmailReveal();

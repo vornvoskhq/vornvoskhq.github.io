@@ -1,8 +1,24 @@
 # Secure notification board plan
 
-The landing page currently uses a local, read-only preview in `app.js`. This is
-intentional: GitHub Pages cannot securely host admin writes, moderation, rate limiting,
-or private credentials.
+## Current backend status (deployed 2026-09-19)
+
+The Convex backend is deployed and the public noticeboard now reads from it:
+
+- public read endpoint (GET, CORS-restricted to this site):
+  `https://glad-dalmatian-963.convex.site/public/posts`
+- dashboard: https://dashboard.convex.dev/t/msudick02/openmatter-board
+- first post seeded via a setup-token mutation; the token was rotated after use
+- posting, editing, deletion, and moderation exist only as admin-gated
+  mutations inside the private `openmatter-board` repository
+- comments remain hard-disabled in code until moderation and rate limiting are
+  tested end-to-end
+
+If the endpoint is unreachable, the noticeboard falls back to the bundled
+static preview posts in `app.js`; no errors are shown to visitors.
+
+Earlier stages below described the backend as planned; it is now live in the
+read-only posture described above. Admin-authenticated posting and moderated
+comments remain future stages.
 
 ## Release stages
 
