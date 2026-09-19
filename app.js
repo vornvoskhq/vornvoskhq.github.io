@@ -186,6 +186,8 @@ function setupParticles() {
   let width = 0;
   let height = 0;
   let particles = [];
+  let running = true;
+  let lastPhase = 0;
 
   function resize() {
     const ratio = window.devicePixelRatio || 1;
@@ -194,33 +196,53 @@ function setupParticles() {
     canvas.width = width * ratio;
     canvas.height = height * ratio;
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-    const count = Math.min(90, Math.floor((width * height) / 22000));
+    // Density: one mote per ~38k px² capped at 48 — sparse field, not a blizzard.
+    const count = Math.min(48, Math.floor((width * height) / 38000));
     particles = Array.from({ length: count }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      r: Math.random() * 1.6 + 0.4,
-      vx: (Math.random() - 0.5) * 0.15,
-      vy: (Math.random() - 0.5) * 0.15,
-      a: Math.random() * 0.5 + 0.15,
+      r: Math.random() * 1.3 + 0.5,
+      vx: (Math.random() - 0.5) * 0.06, // slow drift
+      vy: (Math.random() - 0.5) * 0.06,
+      a: Math.random() * 0.35 + 0.12,
+      phase: Math.random() * Math.PI * 2, // twinkle phase
+      tw: Math.random() * 0.02 + 0.006,  // twinkle speed
     }));
   }
 
-  function tick() {
-    ctx.clearRect(0, 0, width, height);
-    for (const p of particles) {
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.x < -4) p.x = width + 4;
-      if (p.x > width + 4) p.x = -4;
-      if (p.y < -4) p.y = height + 4;
-      if (p.y > height + 4) p.y = -4;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = "hsla(235, 90%, 72%, " + p.a + ")";
-      ctx.fill();
+  function tick(timestamp) {
+    if (running) {
+      const dt = lastPhase === 0 ? 16 : Math.min(48, timestamp - lastPhase);
+      lastPhase = timestamp;
+      const k = dt / 16.7; // frame-rate independent motion
+      ctx.clearRect(0, 0, width, height);
+      for (const p of particles) {
+        p.x += p.vx * k;
+        p.y += p.vy * k;
+        p.phase += p.tw * k;
+        if (p.x < -4) p.x = width + 4;
+        if (p.x > width + 4) p.x = -4;
+        if (p.y < -4) p.y = height + 4;
+        if (p.y > height + 4) p.y = -4;
+        // Twinkle: alpha gently oscillates around its base value.
+        const alpha = p.a * (0.75 + 0.25 * Math.sin(p.phase));
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = "hsla(235, 90%, 72%, " + alpha + ")";
+        ctx.fill();
+      }
     }
     requestAnimationFrame(tick);
   }
+
+  // Pause drawing while the hero is scrolled off-screen.
+  const visibility = new IntersectionObserver(
+    (entries) => {
+      running = entries[0] !== undefined && entries[0].isIntersecting;
+    },
+    { threshold: 0.02 }
+  );
+  visibility.observe(canvas);
 
   resize();
   window.addEventListener("resize", resize, { passive: true });

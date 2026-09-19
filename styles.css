@@ -395,10 +395,10 @@ nav a:hover { color: var(--signal); }
   width: 1px;
   background: var(--line);
   transition: background 0.5s ease, opacity 0.5s ease;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 .field-grid span.active {
-  background: hsl(235 90% 72% / 0.5);
+  background: hsl(235 90% 72% / 0.35);
   opacity: 1;
 }
 
