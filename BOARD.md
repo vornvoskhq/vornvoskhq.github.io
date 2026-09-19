@@ -13,6 +13,12 @@ The Convex backend is deployed and the public noticeboard now reads from it:
   to maintain
 - posting, unpublish/republish, and deletion have been exercised end-to-end;
   every action writes an audit record
+- **admin page**: `/admin.html` on this site (noindex, not linked publicly).
+  Paste the admin token per session — it stays in that browser tab only and is
+  verified server-side on every request. The token lives in the private
+  `openmatter-board` repo (`.env.admin`) and as a Convex env var.
+- failed admin attempts are rate-limited server-side (5 per 15 minutes per
+  origin+IP)
 - comments remain hard-disabled in code until moderation and rate limiting are
   tested end-to-end
 
