@@ -215,6 +215,23 @@ function setupSlider() {
 }
 
 // Ledger waveform: bars with randomized peak heights, CSS-animated.
+function setupScrollFrequency() {
+  const readout = document.querySelector("#scroll-frequency");
+  if (!readout) return;
+  const hz = readout.querySelector("strong");
+  const layer = readout.querySelector("span");
+  const bar = readout.querySelector("b");
+  function update() {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = max > 0 ? window.scrollY / max : 0;
+    if (hz) hz.textContent = Math.round(432 + progress * 4096).toLocaleString() + " Hz";
+    if (layer) layer.textContent = "LAYER " + String(Math.min(7, Math.floor(progress * 7) + 1)).padStart(2, "0") + "/07";
+    if (bar) bar.style.height = progress * 100 + "%";
+  }
+  window.addEventListener("scroll", update, { passive: true });
+  update();
+}
+
 function setupWave() {
   const wave = document.querySelector("#ledger-wave");
   if (!wave) return;
@@ -226,80 +243,90 @@ function setupWave() {
   }
 }
 
-// Hero particle layer: slow drifting motes with a signal-tinted glow.
-// Skipped entirely under reduced motion.
+// Hero particle layer, matching the reference: pointer attraction, glowing
+// connected neighbors, and full-density material particles.
 function setupParticles() {
   if (prefersReducedMotion) return;
   const canvas = document.querySelector("#hero-particles");
   if (!canvas) return;
-
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
   let width = 0;
   let height = 0;
   let particles = [];
-  let running = true;
-  let lastPhase = 0;
+  const mouse = { x: -9999, y: -9999 };
 
   function resize() {
-    const ratio = window.devicePixelRatio || 1;
+    const ratio = Math.min(window.devicePixelRatio || 1, 2);
     width = canvas.clientWidth;
     height = canvas.clientHeight;
     canvas.width = width * ratio;
     canvas.height = height * ratio;
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-    // Density: one mote per ~38k px² capped at 48 — sparse field, not a blizzard.
-    const count = Math.min(48, Math.floor((width * height) / 38000));
+    const count = Math.min(140, Math.floor((width * height) / 12000));
     particles = Array.from({ length: count }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      r: Math.random() * 1.3 + 0.5,
-      vx: (Math.random() - 0.5) * 0.06, // slow drift
-      vy: (Math.random() - 0.5) * 0.06,
-      a: Math.random() * 0.35 + 0.12,
-      phase: Math.random() * Math.PI * 2, // twinkle phase
-      tw: Math.random() * 0.02 + 0.006,  // twinkle speed
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.25,
+      r: Math.random() * 1.6 + 0.3,
+      base: Math.random() * 0.5 + 0.2,
     }));
   }
 
-  function tick(timestamp) {
-    if (running) {
-      const dt = lastPhase === 0 ? 16 : Math.min(48, timestamp - lastPhase);
-      lastPhase = timestamp;
-      const k = dt / 16.7; // frame-rate independent motion
-      ctx.clearRect(0, 0, width, height);
-      for (const p of particles) {
-        p.x += p.vx * k;
-        p.y += p.vy * k;
-        p.phase += p.tw * k;
-        if (p.x < -4) p.x = width + 4;
-        if (p.x > width + 4) p.x = -4;
-        if (p.y < -4) p.y = height + 4;
-        if (p.y > height + 4) p.y = -4;
-        // Twinkle: alpha gently oscillates around its base value.
-        const alpha = p.a * (0.75 + 0.25 * Math.sin(p.phase));
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = "hsla(235, 90%, 72%, " + alpha + ")";
-        ctx.fill();
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+    for (const p of particles) {
+      const dx = mouse.x - p.x;
+      const dy = mouse.y - p.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist > 0 && dist < 160) {
+        const force = (160 - dist) / 160;
+        p.vx += (dx / dist) * force * 0.04;
+        p.vy += (dy / dist) * force * 0.04;
+      }
+      p.vx *= 0.97;
+      p.vy *= 0.97;
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = width;
+      if (p.x > width) p.x = 0;
+      if (p.y < 0) p.y = height;
+      if (p.y > height) p.y = 0;
+      const glow = dist < 160 ? 1 - dist / 160 : 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(235, 90%, 72%, ${p.base + glow * 0.6})`;
+      ctx.fill();
+    }
+    for (let i = 0; i < particles.length; i += 1) {
+      for (let j = i + 1; j < particles.length; j += 1) {
+        const a = particles[i];
+        const b = particles[j];
+        const distance = Math.hypot(a.x - b.x, a.y - b.y);
+        if (distance < 90) {
+          ctx.strokeStyle = `hsla(235, 90%, 72%, ${(1 - distance / 90) * 0.12})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
       }
     }
-    requestAnimationFrame(tick);
+    requestAnimationFrame(draw);
   }
 
-  // Pause drawing while the hero is scrolled off-screen.
-  const visibility = new IntersectionObserver(
-    (entries) => {
-      running = entries[0] !== undefined && entries[0].isIntersecting;
-    },
-    { threshold: 0.02 }
-  );
-  visibility.observe(canvas);
-
-  resize();
+  window.addEventListener("mousemove", (event) => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = event.clientX - rect.left;
+    mouse.y = event.clientY - rect.top;
+  }, { passive: true });
+  window.addEventListener("mouseout", () => { mouse.x = -9999; mouse.y = -9999; }, { passive: true });
   window.addEventListener("resize", resize, { passive: true });
-  requestAnimationFrame(tick);
+  resize();
+  draw();
 }
 
 // Sensor field: 12 vertical rules; the rule nearest the pointer brightens.
@@ -386,6 +413,7 @@ function setupCursor() {
 loadPosts();
 setupArchive();
 setupSlider();
+setupScrollFrequency();
 setupWave();
 setupFieldGrid();
 setupCursor();
