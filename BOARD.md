@@ -19,6 +19,12 @@ The Convex backend is deployed and the public noticeboard now reads from it:
   `openmatter-board` repo (`.env.admin`) and as a Convex env var.
 - failed admin attempts are rate-limited server-side (5 per 15 minutes per
   origin+IP)
+- **image uploads**: the admin page accepts an image per post (jpeg, png,
+  webp, gif, avif; max 5 MiB). Files are stored in Convex storage, validated
+  by magic-byte sniffing (declared type must match content), deduplicated by
+  content hash, and served from `/storage/<id>` on the backend domain.
+  Images are removed automatically when the last post referencing them is
+  deleted; unreferenced uploads can be swept with `images:purgeUnreferenced`.
 - comments remain hard-disabled in code until moderation and rate limiting are
   tested end-to-end
 

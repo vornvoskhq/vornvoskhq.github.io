@@ -33,6 +33,9 @@
       .token-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
       .token-row input { flex: 1; min-width: 220px; }
       .hint { color: var(--muted); font-size: .8rem; margin-top: 10px; }
+      #image-preview-wrap { margin-top: 10px; display: flex; align-items: center; gap: 12px; }
+      #image-preview { max-width: 180px; max-height: 120px; border: 1px solid var(--line); display: block; }
+      .post-thumb { width: 64px; height: 40px; object-fit: cover; border: 1px solid var(--line); flex: none; }
     </style>
   </head>
   <body>
@@ -72,8 +75,12 @@
           <textarea id="f-body" maxlength="2000" required></textarea>
           <label for="f-link">External link (optional)</label>
           <input type="text" id="f-link" maxlength="500" placeholder="https://…" />
-          <label for="f-image">Image URL (optional)</label>
-          <input type="text" id="f-image" maxlength="500" placeholder="https://…/image.jpg" />
+          <label for="f-image">Image (optional — jpeg, png, webp, gif, avif; max 5 MiB)</label>
+          <input type="file" id="f-image" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" />
+          <div id="image-preview-wrap" hidden>
+            <img id="image-preview" alt="Selected image preview" />
+            <button class="button quiet" type="button" id="image-clear">Remove image</button>
+          </div>
           <div class="admin-actions">
             <button class="button primary" type="submit" id="publish-btn">Publish post</button>
           </div>

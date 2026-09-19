@@ -2,6 +2,7 @@
 // supplied per session, kept in sessionStorage only, and verified server-side
 // on every request via the X-Admin-Token header.
 const API = "https://glad-dalmatian-963.convex.site";
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
 const els = {
   status: document.querySelector("#status"),
@@ -16,9 +17,13 @@ const els = {
   body: document.querySelector("#f-body"),
   link: document.querySelector("#f-link"),
   image: document.querySelector("#f-image"),
+  previewWrap: document.querySelector("#image-preview-wrap"),
+  preview: document.querySelector("#image-preview"),
+  previewClear: document.querySelector("#image-clear"),
 };
 
 let token = null;
+let selectedFile = null;
 
 function setStatus(message, kind) {
   els.status.textContent = message;
@@ -71,6 +76,15 @@ function renderPosts(posts) {
     state.className = "post-state " + (post.published ? "live" : "hidden");
     state.textContent = post.published ? "live" : "hidden";
 
+    if (post.image) {
+      const thumb = document.createElement("img");
+      thumb.className = "post-thumb";
+      thumb.src = API + post.image;
+      thumb.alt = "";
+      thumb.loading = "lazy";
+      row.append(thumb);
+    }
+
     const title = document.createElement("span");
     title.className = "post-title";
     title.textContent = post.title;
@@ -122,6 +136,39 @@ async function act(fn) {
   }
 }
 
+// ------------------------------------------------------------ image selection
+
+function clearSelectedImage() {
+  selectedFile = null;
+  els.image.value = "";
+  els.previewWrap.hidden = true;
+  els.preview.src = "";
+}
+
+els.image.addEventListener("change", () => {
+  const file = els.image.files && els.image.files[0] ? els.image.files[0] : null;
+  if (file === null) {
+    clearSelectedImage();
+    return;
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    setStatus("Image is larger than 5 MiB.", "err");
+    clearSelectedImage();
+    return;
+  }
+  selectedFile = file;
+  const reader = new FileReader();
+  reader.onload = () => {
+    els.preview.src = String(reader.result);
+    els.previewWrap.hidden = false;
+  };
+  reader.readAsDataURL(file);
+});
+
+els.previewClear.addEventListener("click", clearSelectedImage);
+
+// ------------------------------------------------------------------- session
+
 function unlock() {
   const value = els.token.value.trim();
   if (value.length < 32) {
@@ -143,6 +190,7 @@ function lock() {
   els.composer.hidden = true;
   els.postsCard.hidden = true;
   els.postsList.replaceChildren();
+  clearSelectedImage();
   setStatus("Locked.");
 }
 
@@ -152,27 +200,35 @@ els.token.addEventListener("keydown", (event) => {
   if (event.key === "Enter") unlock();
 });
 
+// ---------------------------------------------------------------- submission
+
 els.form.addEventListener("submit", async (event) => {
   event.preventDefault();
+
+  const form = new FormData();
+  form.append("title", els.title.value);
+  form.append("body", els.body.value);
   const externalUrl = els.link.value.trim();
-  const imageUrl = els.image.value.trim();
+  if (externalUrl) {
+    form.append("externalUrl", externalUrl);
+  }
+  if (selectedFile !== null) {
+    form.append("image", selectedFile);
+  }
+
   await act(() =>
     api("/admin/posts", {
       method: "POST",
-      headers: headers(),
-      body: JSON.stringify({
-        title: els.title.value,
-        body: els.body.value,
-        ...(externalUrl ? { externalUrl } : {}),
-        ...(imageUrl ? { imageUrl } : {}),
-      }),
+      headers: { "X-Admin-Token": token },
+      body: form,
     }),
   );
+
   if (!els.status.classList.contains("err")) {
     els.title.value = "";
     els.body.value = "";
     els.link.value = "";
-    els.image.value = "";
+    clearSelectedImage();
   }
 });
 

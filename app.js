@@ -55,7 +55,7 @@ function renderPost(post, board) {
   if (post.image) {
     const image = document.createElement("img");
     image.className = "notice-image";
-    image.src = post.image;
+    image.src = post.image.startsWith("http") ? post.image : "https://glad-dalmatian-963.convex.site" + post.image;
     image.alt = "";
     image.loading = "lazy";
     article.append(image);
