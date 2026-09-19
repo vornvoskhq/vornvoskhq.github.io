@@ -186,7 +186,7 @@ em { color: var(--signal); font-style: italic; }
   position: relative;
   z-index: 20;
   width: min(calc(100% - 48px), var(--max));
-  margin-block: auto;
+  margin: auto;
   padding-block: 90px;
 }
 .hero-title {
@@ -1122,6 +1122,8 @@ header.site-header, main, .site-footer { position: relative; z-index: 2; }
 @media (min-width: 768px) {
   .section, .hero-inner, .footer-inner { width: min(calc(100% - 96px), var(--max)); }
   .section { padding-block: 160px; }
+  .hero-node { right: 48px; }
+  .hero-readouts { left: 48px; }
   .narrow { width: min(calc(100% - 96px), 1152px); }
   .readings-section, .convergence-section { padding-block: 128px; }
   .hero-topbar { padding-inline: 48px; }
