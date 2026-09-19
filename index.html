@@ -8,8 +8,11 @@
     <meta property="og:title" content="Open Matter Labs" />
     <meta property="og:description" content="Reproducible materials research, open data, and public-interest work." />
     <meta property="og:url" content="https://openmatterlabs.org/" />
-    <title>Open Matter Labs</title>
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <title>Open Matter Labs — Open materials research</title>
     <link rel="canonical" href="https://openmatterlabs.org/" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -21,9 +24,8 @@
       <nav aria-label="Primary navigation">
         <a href="#work">Work</a>
         <a href="#board">Updates</a>
+        <a href="#bookmarks">Bookmarks</a>
         <a href="#about">About</a>
-        <a class="admin-link" href="https://mail.zoho.com/" target="_blank" rel="noopener noreferrer">Webmail ↗</a>
-        <a class="admin-link" href="https://mailadmin.zoho.com/" target="_blank" rel="noopener noreferrer">Mail admin ↗</a>
       </nav>
     </header>
 
@@ -80,6 +82,14 @@
         </p>
       </section>
 
+      <section class="section bookmarks" id="bookmarks" aria-labelledby="bookmarks-title">
+        <div class="section-heading">
+          <p class="eyebrow">On the web</p>
+          <h2 id="bookmarks-title">Bookmarks.</h2>
+        </div>
+        <div class="work-grid bookmarks-grid" id="bookmarks-grid" aria-live="polite"></div>
+      </section>
+
       <section class="section about" id="about" aria-labelledby="about-title">
         <div class="about-panel">
           <p class="eyebrow">About Open Matter Labs</p>
@@ -89,7 +99,8 @@
             documented, and published here without exposing private research repositories or
             unfinished computational infrastructure.
           </p>
-          <a class="text-link" href="mailto:hello@openmatterlabs.org">hello@openmatterlabs.org ↗</a>
+          <button class="text-link email-reveal" type="button">Show contact email</button>
+          <noscript><p class="muted">Enable JavaScript to reveal the contact email.</p></noscript>
         </div>
       </section>
     </main>

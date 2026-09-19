@@ -38,17 +38,16 @@ At Spaceship DNS, add the records Zoho gives you:
 - DMARC TXT record after mail flow is verified, initially with a monitoring policy;
 - any Zoho CNAME records required for webmail or service verification.
 
-Recommended initial mailboxes/aliases:
+Create the mailboxes and aliases you need once the domain is verified (a public
+contact address, an administration address, and a research contact are typical).
+Do not enumerate administration addresses in this public repository.
 
-- `hello@openmatterlabs.org` — public contact;
-- `admin@openmatterlabs.org` — account administration;
-- `research@openmatterlabs.org` — research/data contact;
-- `dmarc@openmatterlabs.org` — aggregate DMARC reports if enabled.
+Administration addresses, mail routing, and account recovery details belong in
+your own private notes or password manager — never in this repository.
 
-Use Zoho Webmail for the private mailbox/admin portal:
-
-- https://mail.zoho.com/
-- https://www.zoho.com/mail/help/adminconsole/
+Use Zoho Webmail and the Zoho Mail Admin Console for the private mailbox and administration
+portals. Do not link them from this public site; keep them in your own password manager.
+Zoho's own help documentation describes the current console URLs.
 
 Never commit Zoho credentials, recovery codes, or DNS API tokens to this repository.
 
