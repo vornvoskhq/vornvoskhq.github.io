@@ -158,17 +158,73 @@ function renderBookmarks() {
 }
 
 function setupEmailReveal() {
-  const button = document.querySelector(".email-reveal");
-  if (!button) return;
+  const buttons = document.querySelectorAll(".email-reveal");
+  if (buttons.length === 0) return;
 
-  button.addEventListener("click", () => {
-    const address = EMAIL_PARTS[0] + "@" + EMAIL_PARTS[1];
-    const link = document.createElement("a");
-    link.href = "mailto:" + address;
-    link.className = "text-link";
-    link.textContent = address;
-    button.replaceWith(link);
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const address = EMAIL_PARTS[0] + "@" + EMAIL_PARTS[1];
+      const link = document.createElement("a");
+      link.href = "mailto:" + address;
+      link.className = "text-link";
+      link.textContent = address;
+      button.replaceWith(link);
+    });
   });
+}
+
+// Hero particle layer: slow drifting motes with a signal-tinted glow.
+// Skipped entirely under reduced motion.
+function setupParticles() {
+  if (prefersReducedMotion) return;
+  const canvas = document.querySelector("#hero-particles");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  let width = 0;
+  let height = 0;
+  let particles = [];
+
+  function resize() {
+    const ratio = window.devicePixelRatio || 1;
+    width = canvas.clientWidth;
+    height = canvas.clientHeight;
+    canvas.width = width * ratio;
+    canvas.height = height * ratio;
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    const count = Math.min(90, Math.floor((width * height) / 22000));
+    particles = Array.from({ length: count }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      r: Math.random() * 1.6 + 0.4,
+      vx: (Math.random() - 0.5) * 0.15,
+      vy: (Math.random() - 0.5) * 0.15,
+      a: Math.random() * 0.5 + 0.15,
+    }));
+  }
+
+  function tick() {
+    ctx.clearRect(0, 0, width, height);
+    for (const p of particles) {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < -4) p.x = width + 4;
+      if (p.x > width + 4) p.x = -4;
+      if (p.y < -4) p.y = height + 4;
+      if (p.y > height + 4) p.y = -4;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = "hsla(235, 90%, 72%, " + p.a + ")";
+      ctx.fill();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  resize();
+  window.addEventListener("resize", resize, { passive: true });
+  requestAnimationFrame(tick);
 }
 
 // Sensor field: 12 vertical rules; the rule nearest the pointer brightens.
@@ -256,3 +312,4 @@ renderBookmarks();
 setupEmailReveal();
 setupFieldGrid();
 setupCursor();
+setupParticles();

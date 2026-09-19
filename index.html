@@ -34,7 +34,7 @@
       </a>
       <nav aria-label="Primary navigation">
         <a href="#work">Work</a>
-        <a href="#board">Updates</a>
+        <a href="#board">Dispatch</a>
         <a href="#field">Field</a>
         <a href="#about">About</a>
       </nav>
@@ -46,18 +46,20 @@
           <img src="assets/hero.jpg" alt="" loading="eager" />
           <div class="scanline"></div>
         </div>
+        <canvas class="hero-particles" id="hero-particles"></canvas>
         <div class="hero-inner">
           <p class="mono-label"><span class="dot"></span>Open materials research · public benefit</p>
-          <h1 id="hero-title">Matter, made <em>open</em> and useful.</h1>
+          <h1 id="hero-title">Matter, made <em>legible</em>.</h1>
           <p class="hero-copy">
             Open Matter Labs develops reproducible materials research, data, and creative
             work with a commitment to human dignity and public access.
           </p>
           <div class="hero-actions">
-            <a class="button primary" href="#work">Explore the work</a>
-            <a class="button quiet" href="#board">Read updates</a>
+            <a class="button primary" href="#work">Begin with the work</a>
+            <a class="button quiet" href="#board">Or just listen in</a>
           </div>
         </div>
+        <p class="scroll-cue" aria-hidden="true">SCROLL</p>
       </section>
 
       <section class="section" id="work" aria-labelledby="work-title">
@@ -88,24 +90,28 @@
       </section>
 
       <section class="section" id="board" aria-labelledby="board-title">
-        <div class="section-heading" style="display:flex; justify-content:space-between; align-items:flex-end; gap:24px; max-width:none;">
+        <div class="section-heading board-heading">
           <div>
-            <p class="mono-label"><span class="dot"></span>02 / Public noticeboard</p>
-            <h2 id="board-title">Small updates from the lab.</h2>
+            <p class="mono-label"><span class="dot"></span>02 / Dispatch</p>
+            <h2 id="board-title">Transmissions from the lab.</h2>
+            <p class="lede">
+              Short updates, published results, and notes between experiments — served
+              from the lab's own backend.
+            </p>
           </div>
           <p class="board-status"><span class="status-dot"></span> Live</p>
         </div>
         <div id="noticeboard" class="noticeboard" aria-live="polite"></div>
         <p class="board-note">
-          Public posting and moderated comments are being prepared. Until the secure board
-          backend is connected, this page exposes no public submission form.
+          Public posting and moderated comments are in preparation; there is no public
+          submission form. Updates are published by the lab.
         </p>
       </section>
 
       <section class="section" id="field" aria-labelledby="field-title">
         <div class="section-heading">
           <p class="mono-label"><span class="dot"></span>03 / Field notes</p>
-          <h2 id="field-title">Work we are reading and watching.</h2>
+          <h2 id="field-title">What we are reading and watching.</h2>
         </div>
         <div class="work-grid">
           <article class="work-card">
@@ -141,7 +147,9 @@
       <section class="section" id="about" aria-labelledby="about-title">
         <div class="about-panel">
           <p class="mono-label"><span class="dot"></span>04 / About</p>
-          <h2 id="about-title" style="font-size: clamp(2rem, 4vw, 3.4rem); line-height:1.05;">A small, independent home for open evidence.</h2>
+          <h2 id="about-title" style="font-size: clamp(2rem, 4vw, 3.4rem); line-height:1.05;">
+            A small, independent home for open evidence.
+          </h2>
           <p>
             The lab is beginning with materials science and data papers. Results will be
             selected, documented, and published here without exposing private research
@@ -154,8 +162,15 @@
     </main>
 
     <footer class="site-footer">
-      <span>© 2026 Open Matter Labs</span>
-      <span>openmatterlabs.org</span>
+      <div class="footer-cta">
+        <p class="mono-label"><span class="dot"></span>05 / Transmit</p>
+        <h2 class="display">Begin a conversation, <em>or just listen in</em>.</h2>
+      </div>
+      <div class="footer-meta">
+        <button class="text-link email-reveal" type="button">Reveal contact email</button>
+        <span>© 2026 Open Matter Labs</span>
+        <span>openmatterlabs.org</span>
+      </div>
     </footer>
     <script src="app.js" defer></script>
   </body>
