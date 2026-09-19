@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Open Matter Labs publishes reproducible materials research and open data for public benefit." />
-    <meta name="theme-color" content="#f4f2ec" />
+    <meta name="theme-color" content="#09090c" />
     <meta property="og:title" content="Open Matter Labs" />
     <meta property="og:description" content="Reproducible materials research, open data, and public-interest work." />
     <meta property="og:url" content="https://openmatterlabs.org/" />
@@ -13,91 +13,139 @@
     <title>Open Matter Labs — Open materials research</title>
     <link rel="canonical" href="https://openmatterlabs.org/" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div class="field-grid" id="field-grid" aria-hidden="true"></div>
+    <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+    <div class="cursor-readout" id="cursor-readout" aria-hidden="true">432 Hz</div>
+
     <header class="site-header">
       <a class="wordmark" href="#top" aria-label="Open Matter Labs home">
         <span class="mark" aria-hidden="true">◈</span>
-        <span>open matter labs</span>
+        <span>Open Matter Labs</span>
       </a>
       <nav aria-label="Primary navigation">
         <a href="#work">Work</a>
         <a href="#board">Updates</a>
-        <a href="#bookmarks">Bookmarks</a>
+        <a href="#field">Field</a>
         <a href="#about">About</a>
       </nav>
     </header>
 
     <main id="top">
       <section class="hero" aria-labelledby="hero-title">
-        <p class="eyebrow">Open materials research · public benefit</p>
-        <h1 id="hero-title">Knowledge about matter, made open and useful.</h1>
-        <p class="hero-copy">
-          Open Matter Labs develops reproducible materials research, data, and creative work
-          with a commitment to human dignity and public access.
-        </p>
-        <div class="hero-actions">
-          <a class="button primary" href="#work">Explore the work</a>
-          <a class="button quiet" href="#board">Read updates</a>
+        <div class="hero-media" aria-hidden="true">
+          <img src="assets/hero.jpg" alt="" loading="eager" />
+          <div class="scanline"></div>
+        </div>
+        <div class="hero-inner">
+          <p class="mono-label"><span class="dot"></span>Open materials research · public benefit</p>
+          <h1 id="hero-title">Matter, made <em>open</em> and useful.</h1>
+          <p class="hero-copy">
+            Open Matter Labs develops reproducible materials research, data, and creative
+            work with a commitment to human dignity and public access.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#work">Explore the work</a>
+            <a class="button quiet" href="#board">Read updates</a>
+          </div>
         </div>
       </section>
 
-      <section class="section work" id="work" aria-labelledby="work-title">
+      <section class="section" id="work" aria-labelledby="work-title">
         <div class="section-heading">
-          <p class="eyebrow">Selected directions</p>
+          <p class="mono-label"><span class="dot"></span>01 / Selected directions</p>
           <h2 id="work-title">Science, evidence, and the material world.</h2>
         </div>
         <div class="work-grid">
           <article class="work-card">
-            <p class="card-number">01</p>
+            <img class="card-img" src="assets/specimen-silicon.jpg" alt="Abstract dark render of an etched silicon lattice" loading="lazy" />
+            <p class="id">DIR-01</p>
             <h3>Open materials data</h3>
             <p>Curated results, charts, and provenance from computational materials research.</p>
           </article>
           <article class="work-card">
-            <p class="card-number">02</p>
+            <img class="card-img" src="assets/specimen-dendritic.jpg" alt="Abstract render of dendritic crystal growth" loading="lazy" />
+            <p class="id">DIR-02</p>
             <h3>Reproducible methods</h3>
             <p>Workflows designed so findings can be checked, compared, and responsibly reused.</p>
           </article>
           <article class="work-card">
-            <p class="card-number">03</p>
+            <img class="card-img" src="assets/specimen-glass.jpg" alt="Abstract render of refractive glass forms" loading="lazy" />
+            <p class="id">DIR-03</p>
             <h3>Metal, art, and dignity</h3>
             <p>Creative and public-interest work connecting materials, labor, place, and human rights.</p>
           </article>
         </div>
       </section>
 
-      <section class="section board-section" id="board" aria-labelledby="board-title">
-        <div class="section-heading board-heading">
+      <section class="section" id="board" aria-labelledby="board-title">
+        <div class="section-heading" style="display:flex; justify-content:space-between; align-items:flex-end; gap:24px; max-width:none;">
           <div>
-            <p class="eyebrow">Public noticeboard</p>
+            <p class="mono-label"><span class="dot"></span>02 / Public noticeboard</p>
             <h2 id="board-title">Small updates from the lab.</h2>
           </div>
-          <p class="board-status"><span class="status-dot"></span> Early public preview</p>
+          <p class="board-status"><span class="status-dot"></span> Live</p>
         </div>
         <div id="noticeboard" class="noticeboard" aria-live="polite"></div>
         <p class="board-note">
-          Public posting and moderated comments are being prepared. Until the secure board backend
-          is connected, this page exposes no public submission form.
+          Public posting and moderated comments are being prepared. Until the secure board
+          backend is connected, this page exposes no public submission form.
         </p>
       </section>
 
-      <section class="section bookmarks" id="bookmarks" aria-labelledby="bookmarks-title">
+      <section class="section" id="field" aria-labelledby="field-title">
         <div class="section-heading">
-          <p class="eyebrow">On the web</p>
-          <h2 id="bookmarks-title">Bookmarks.</h2>
+          <p class="mono-label"><span class="dot"></span>03 / Field notes</p>
+          <h2 id="field-title">Work we are reading and watching.</h2>
         </div>
-        <div class="work-grid bookmarks-grid" id="bookmarks-grid" aria-live="polite"></div>
+        <div class="work-grid">
+          <article class="work-card">
+            <p class="id">Reference</p>
+            <h3>A foundation model for atomistic chemistry</h3>
+            <p>Message-passing potentials achieving chemically accurate interatomic models across the periodic table.</p>
+            <div class="metrics">
+              <div><span>Venue</span><span>J. Chem. Phys. 2025</span></div>
+              <div><span>Authors</span><span>Batatia et al.</span></div>
+            </div>
+          </article>
+          <article class="work-card">
+            <p class="id">Reference</p>
+            <h3>Scaling deep learning for materials discovery</h3>
+            <p>Predicting millions of candidate crystals, with hundreds of thousands stable toward synthesis.</p>
+            <div class="metrics">
+              <div><span>Venue</span><span>Nature 2023</span></div>
+              <div><span>Authors</span><span>Merchant et al.</span></div>
+            </div>
+          </article>
+          <article class="work-card">
+            <p class="id">Practice</p>
+            <h3>Matter as an artistic medium</h3>
+            <p>Studios and exhibitions that make material change visible — ice, light, woven structures, printed chitin.</p>
+            <div class="metrics">
+              <div><span>Mode</span><span>Exhibition</span></div>
+              <div><span>Field</span><span>Art × Science</span></div>
+            </div>
+          </article>
+        </div>
       </section>
 
-      <section class="section about" id="about" aria-labelledby="about-title">
+      <section class="section" id="about" aria-labelledby="about-title">
         <div class="about-panel">
-          <p class="eyebrow">About Open Matter Labs</p>
-          <h2 id="about-title">A small, independent home for open evidence.</h2>
+          <p class="mono-label"><span class="dot"></span>04 / About</p>
+          <h2 id="about-title" style="font-size: clamp(2rem, 4vw, 3.4rem); line-height:1.05;">A small, independent home for open evidence.</h2>
           <p>
-            The lab is beginning with materials science and data papers. Results will be selected,
-            documented, and published here without exposing private research repositories or
-            unfinished computational infrastructure.
+            The lab is beginning with materials science and data papers. Results will be
+            selected, documented, and published here without exposing private research
+            repositories or unfinished computational infrastructure.
           </p>
           <button class="text-link email-reveal" type="button">Show contact email</button>
           <noscript><p class="muted">Enable JavaScript to reveal the contact email.</p></noscript>

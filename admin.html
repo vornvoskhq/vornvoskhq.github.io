@@ -4,32 +4,33 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
-    <meta name="theme-color" content="#f4f2ec" />
+    <meta name="theme-color" content="#09090c" />
     <title>Board admin — Open Matter Labs</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
     <style>
       .admin-wrap { max-width: 760px; }
-      .admin-card { padding: 24px; border: 1px solid var(--line); background: var(--panel); margin-bottom: 20px; }
-      .admin-card h2 { font-size: 1.3rem; margin-bottom: 14px; }
-      .admin-card label { display: block; margin: 12px 0 4px; font-size: .85rem; font-weight: 700; }
+      .admin-card { padding: 24px; border: 1px solid var(--line); background: var(--panel); margin-bottom: 20px; border-radius: var(--radius); }
+      .admin-card h2 { font-family: var(--font-display); font-weight: 400; font-size: 1.5rem; margin-bottom: 14px; }
+      .admin-card label { display: block; margin: 12px 0 4px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
       .admin-card input[type="text"], .admin-card input[type="password"], .admin-card textarea {
-        width: 100%; padding: 10px; border: 1px solid var(--line); background: #fff; font: inherit;
+        width: 100%; padding: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); font: inherit; border-radius: var(--radius);
       }
+      .admin-card input[type="file"] { color: var(--muted); }
       .admin-card textarea { min-height: 110px; resize: vertical; }
       .admin-actions { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
-      .admin-status { margin: 0 0 16px; font-size: .9rem; min-height: 1.2em; }
-      .admin-status.ok { color: #2f6b39; }
-      .admin-status.err { color: var(--copper-dark); font-weight: 700; }
-      .post-row { display: flex; align-items: baseline; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+      .admin-status { margin: 0 0 16px; font-size: .9rem; min-height: 1.2em; color: var(--muted); }
+      .admin-status.ok { color: #6fbf73; }
+      .admin-status.err { color: var(--signal); font-weight: 600; }
+      .post-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
       .post-row:first-child { border-top: none; }
-      .post-state { font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-      .post-state.live { color: #2f6b39; }
+      .post-state { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; flex: none; }
+      .post-state.live { color: #6fbf73; }
       .post-state.hidden { color: var(--muted); }
-      .post-title { font-weight: 700; flex: 1; }
-      .post-row button { padding: 4px 10px; border: 1px solid var(--line); background: var(--panel); cursor: pointer; font: inherit; font-size: .8rem; }
-      .post-row button:hover { border-color: var(--ink); }
-      .post-row button.danger:hover { border-color: var(--copper-dark); color: var(--copper-dark); }
+      .post-title { font-weight: 500; flex: 1; }
+      .post-row button { padding: 4px 10px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); cursor: pointer; font: inherit; font-size: .8rem; border-radius: var(--radius); }
+      .post-row button:hover { border-color: var(--signal); color: var(--signal); }
+      .post-row button.danger:hover { border-color: hsl(0 62% 55%); color: hsl(0 62% 55%); }
       .token-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
       .token-row input { flex: 1; min-width: 220px; }
       .hint { color: var(--muted); font-size: .8rem; margin-top: 10px; }
@@ -50,7 +51,8 @@
     </header>
 
     <main class="section admin-wrap">
-      <h1 style="font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: -.05em;">Board admin.</h1>
+      <p class="mono-label"><span class="dot"></span>Board administration</p>
+      <h1 style="font-family: var(--font-display); font-weight: 400; font-size: clamp(2.4rem, 6vw, 4rem); letter-spacing: -0.01em; margin: 8px 0 20px;">Board admin.</h1>
       <p class="admin-status" id="status" role="status" aria-live="polite"></p>
 
       <section class="admin-card" aria-labelledby="token-title">

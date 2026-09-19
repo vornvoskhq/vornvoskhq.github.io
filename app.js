@@ -1,15 +1,16 @@
-// Open Matter Labs — static site behavior.
+// Open Matter Labs — site behavior for the "signal" theme.
 // No secrets belong in this file. The board backend is read-only from here:
 // posting and moderation live server-side in the private openmatter-board repo.
 
-// Read-only public endpoint of the Convex board backend (HTTP actions are
-// served on the .convex.site domain). If it is unreachable, the noticeboard
-// falls back to the bundled preview posts below.
-const BOARD_ENDPOINT =
-  "https://glad-dalmatian-963.convex.site/public/posts";
+const BOARD_ENDPOINT = "https://glad-dalmatian-963.convex.site/public/posts";
+const BOARD_ORIGIN = "https://glad-dalmatian-963.convex.site";
 
 // Assembly-encoded contact address. The full string never appears in HTML source.
 const EMAIL_PARTS = ["inquiries", "openmatterlabs.org"];
+
+const prefersReducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)"
+).matches;
 
 const posts = [
   {
@@ -55,15 +56,12 @@ function renderPost(post, board) {
   if (post.image) {
     const image = document.createElement("img");
     image.className = "notice-image";
-    image.src = post.image.startsWith("http") ? post.image : "https://glad-dalmatian-963.convex.site" + post.image;
+    image.src = post.image.startsWith("http")
+      ? post.image
+      : BOARD_ORIGIN + post.image;
     image.alt = "";
     image.loading = "lazy";
     article.append(image);
-  } else {
-    const placeholder = document.createElement("div");
-    placeholder.className = "notice-image";
-    placeholder.setAttribute("aria-hidden", "true");
-    article.append(placeholder);
   }
 
   const body = document.createElement("div");
@@ -117,10 +115,10 @@ async function loadPosts() {
           date: post.date,
           title: post.title,
           text: post.body,
-          image: post.imageUrl,
-          link: post.externalUrl,
+          image: post.image || "",
+          link: post.externalUrl || "",
         },
-        board,
+        board
       );
     }
   } else {
@@ -173,6 +171,88 @@ function setupEmailReveal() {
   });
 }
 
+// Sensor field: 12 vertical rules; the rule nearest the pointer brightens.
+function setupFieldGrid() {
+  const grid = document.querySelector("#field-grid");
+  if (!grid || prefersReducedMotion) return;
+
+  const COUNT = 12;
+  const rules = [];
+  for (let i = 0; i < COUNT; i += 1) {
+    const span = document.createElement("span");
+    span.style.left = (i / COUNT) * 100 + "%";
+    grid.append(span);
+    rules.push(span);
+  }
+
+  let activeIndex = -1;
+  window.addEventListener(
+    "mousemove",
+    (event) => {
+      const index = Math.min(
+        COUNT - 1,
+        Math.max(0, Math.floor((event.clientX / window.innerWidth) * COUNT))
+      );
+      if (index !== activeIndex) {
+        if (activeIndex >= 0 && rules[activeIndex]) {
+          rules[activeIndex].classList.remove("active");
+        }
+        if (rules[index]) {
+          rules[index].classList.add("active");
+        }
+        activeIndex = index;
+      }
+    },
+    { passive: true }
+  );
+}
+
+// Crosshair cursor with a frequency readout. Fine pointers only.
+function setupCursor() {
+  if (prefersReducedMotion) return;
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+  const dot = document.querySelector("#cursor-dot");
+  const ring = document.querySelector("#cursor-ring");
+  const readout = document.querySelector("#cursor-readout");
+  if (!dot || !ring || !readout) return;
+
+  document.body.classList.add("cursor-override");
+
+  let targetX = -100;
+  let targetY = -100;
+  let ringX = -100;
+  let ringY = -100;
+  let freq = 432;
+
+  window.addEventListener(
+    "mousemove",
+    (event) => {
+      targetX = event.clientX;
+      targetY = event.clientY;
+      const interactive =
+        event.target instanceof Element &&
+        event.target.closest("a, button, input, textarea, [data-cursor='hover']");
+      freq = interactive ? 880 : 432;
+      readout.textContent = freq + " Hz";
+      dot.style.transform = "translate(" + targetX + "px," + targetY + "px)";
+      readout.style.transform =
+        "translate(" + targetX + "px," + targetY + "px)";
+    },
+    { passive: true }
+  );
+
+  function loop() {
+    ringX += (targetX - ringX) * 0.18;
+    ringY += (targetY - ringY) * 0.18;
+    ring.style.transform = "translate(" + ringX + "px," + ringY + "px)";
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+}
+
 loadPosts();
 renderBookmarks();
 setupEmailReveal();
+setupFieldGrid();
+setupCursor();
