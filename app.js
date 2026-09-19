@@ -364,8 +364,9 @@ function setupCursor() {
       const interactive =
         event.target instanceof Element &&
         event.target.closest("a, button, input, textarea, [data-cursor='hover']");
-      freq = interactive ? 880 : 432;
-      readout.textContent = freq + " Hz";
+      freq = interactive ? 888 : 432;
+      document.body.classList.toggle("cursor-hover", Boolean(interactive));
+      readout.textContent = freq + "Hz";
       dot.style.transform = "translate(" + targetX + "px," + targetY + "px)";
       readout.style.transform =
         "translate(" + targetX + "px," + targetY + "px)";
