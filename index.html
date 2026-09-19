@@ -10,7 +10,7 @@
     <meta property="og:url" content="https://openmatterlabs.org/" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary" />
-    <title>Open Matter Labs — Open materials research</title>
+    <title>Open Matter Labs — Material research & art foundation</title>
     <link rel="canonical" href="https://openmatterlabs.org/" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -27,151 +27,463 @@
     <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
     <div class="cursor-readout" id="cursor-readout" aria-hidden="true">432 Hz</div>
 
-    <header class="site-header">
-      <a class="wordmark" href="#top" aria-label="Open Matter Labs home">
-        <span class="mark" aria-hidden="true">◈</span>
-        <span>Open Matter Labs</span>
-      </a>
-      <nav aria-label="Primary navigation">
-        <a href="#work">Work</a>
-        <a href="#board">Dispatch</a>
-        <a href="#field">Field</a>
-        <a href="#about">About</a>
-      </nav>
-    </header>
-
     <main id="top">
+      <!-- ================================================== hero -->
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-media" aria-hidden="true">
           <img src="assets/hero.jpg" alt="" loading="eager" />
           <div class="scanline"></div>
         </div>
         <canvas class="hero-particles" id="hero-particles"></canvas>
+
+        <div class="hero-topbar">
+          <a class="topbar-brand" href="#top">
+            <span class="topbar-dot" aria-hidden="true"></span>
+            OPEN MATTER
+          </a>
+          <nav aria-label="Primary navigation">
+            <a href="#archive">Archive</a>
+            <a href="#collaboratory">Collaboratory</a>
+            <a href="#dispatch">Dispatch</a>
+            <a href="#reading">Reading</a>
+            <a href="#contact">Contact</a>
+          </nav>
+          <span class="topbar-est">EST. MMXXVI</span>
+        </div>
+
         <div class="hero-inner">
-          <p class="mono-label"><span class="dot"></span>Open materials research · public benefit</p>
-          <h1 id="hero-title">Matter, made <em>legible</em>.</h1>
-          <p class="hero-copy">
-            Open Matter Labs develops reproducible materials research, data, and creative
-            work with a commitment to human dignity and public access.
+          <p class="eyebrow">Material research&nbsp;&nbsp;/&nbsp;&nbsp;Art foundation</p>
+          <h1 class="hero-title" id="hero-title">
+            <span class="hw">Tuning</span>
+            <span class="hw">Into</span>
+            <span class="hw">Matter</span>
+          </h1>
+          <p class="hero-lede">
+            A public-benefit foundation bridging materials research and artistic
+            practice — making the invisible signals of matter tangible,
+            reproducible, and humane.
           </p>
-          <div class="hero-actions">
-            <a class="button primary" href="#work">Begin with the work</a>
-            <a class="button quiet" href="#board">Or just listen in</a>
-          </div>
         </div>
-        <p class="scroll-cue" aria-hidden="true">SCROLL</p>
-      </section>
 
-      <section class="section" id="work" aria-labelledby="work-title">
-        <div class="section-heading">
-          <p class="mono-label"><span class="dot"></span>01 / Selected directions</p>
-          <h2 id="work-title">Science, evidence, and the material world.</h2>
-        </div>
-        <div class="work-grid">
-          <article class="work-card">
-            <img class="card-img" src="assets/specimen-silicon.jpg" alt="Abstract dark render of an etched silicon lattice" loading="lazy" />
-            <p class="id">DIR-01</p>
-            <h3>Open materials data</h3>
-            <p>Curated results, charts, and provenance from computational materials research.</p>
-          </article>
-          <article class="work-card">
-            <img class="card-img" src="assets/specimen-dendritic.jpg" alt="Abstract render of dendritic crystal growth" loading="lazy" />
-            <p class="id">DIR-02</p>
-            <h3>Reproducible methods</h3>
-            <p>Workflows designed so findings can be checked, compared, and responsibly reused.</p>
-          </article>
-          <article class="work-card">
-            <img class="card-img" src="assets/specimen-glass.jpg" alt="Abstract render of refractive glass forms" loading="lazy" />
-            <p class="id">DIR-03</p>
-            <h3>Metal, art, and dignity</h3>
-            <p>Creative and public-interest work connecting materials, labor, place, and human rights.</p>
-          </article>
+        <a class="hero-node" href="#archive" data-cursor="hover">
+          <span class="node-orb" aria-hidden="true">
+            <span class="node-ping"></span>
+          </span>
+          <span class="node-text">Explore the research</span>
+        </a>
+
+        <div class="hero-readouts" aria-hidden="true">
+          <div>DISPATCH · LIVE</div>
+          <div class="lock">COMPUTATIONS · RUNNING</div>
         </div>
       </section>
 
-      <section class="section" id="board" aria-labelledby="board-title">
-        <div class="section-heading board-heading">
+      <!-- ================================== 02 · the archive of matter -->
+      <section class="section" id="archive" aria-labelledby="archive-title">
+        <div class="section-head">
           <div>
-            <p class="mono-label"><span class="dot"></span>02 / Dispatch</p>
-            <h2 id="board-title">Transmissions from the lab.</h2>
-            <p class="lede">
-              Short updates, published results, and notes between experiments — served
-              from the lab's own backend.
-            </p>
+            <p class="eyebrow">02 / The Archive of Matter</p>
+            <h2 id="archive-title">Research as <em>collectible</em> form.</h2>
           </div>
-          <p class="board-status"><span class="status-dot"></span> Live</p>
+          <p class="lede">
+            Each specimen is a working direction of the lab — computation, craft,
+            and publication treated as one archive.
+          </p>
         </div>
-        <div id="noticeboard" class="noticeboard" aria-live="polite"></div>
-        <p class="board-note">
-          Public posting and moderated comments are in preparation; there is no public
-          submission form. Updates are published by the lab.
+
+        <div class="archive-controls">
+          <span class="archive-count" id="archive-count">01 — 03 SPECIMENS</span>
+          <div class="archive-nav">
+            <button class="archive-btn" id="archive-prev" type="button" aria-label="Previous specimen">←</button>
+            <button class="archive-btn" id="archive-next" type="button" aria-label="Next specimen">→</button>
+          </div>
+        </div>
+
+        <div class="archive-scroller" id="archive-scroller">
+          <article class="specimen">
+            <div class="specimen-frame">
+              <img src="assets/specimen-silicon.jpg" alt="Abstract render of a crystalline lattice" loading="lazy" />
+              <p class="specimen-id">OX-01</p>
+              <p class="specimen-disc">Computational</p>
+              <div class="specimen-body">
+                <h3>Oxide Dielectric</h3>
+                <p>Vacancy migration in dielectric oxides — barriers mapped with DFT-verified machine-learning potentials.</p>
+                <div class="specimen-metrics">
+                  <div><span>Method</span><span>DFT + MLIP</span></div>
+                  <div><span>Engines</span><span>pw.x · LAMMPS</span></div>
+                  <div><span>Status</span><span>Running</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="specimen">
+            <div class="specimen-frame">
+              <img src="assets/specimen-dendritic.jpg" alt="Abstract render of dendritic crystal growth" loading="lazy" />
+              <p class="specimen-id">MET-02</p>
+              <p class="specimen-disc">Studio</p>
+              <div class="specimen-body">
+                <h3>Metal Art Practice</h3>
+                <p>Forged and cast work in copper alloys — the same elements the simulations describe, moved by hand.</p>
+                <div class="specimen-metrics">
+                  <div><span>Medium</span><span>Cu alloys</span></div>
+                  <div><span>Mode</span><span>Studio work</span></div>
+                  <div><span>Status</span><span>Ongoing</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="specimen">
+            <div class="specimen-frame">
+              <img src="assets/specimen-glass.jpg" alt="Abstract render of refractive glass forms" loading="lazy" />
+              <p class="specimen-id">DAT-03</p>
+              <p class="specimen-disc">Publication</p>
+              <div class="specimen-body">
+                <h3>Open Data Papers</h3>
+                <p>Selected results published with methods, conditions, and provenance — charted and citable.</p>
+                <div class="specimen-metrics">
+                  <div><span>Format</span><span>Data papers</span></div>
+                  <div><span>License</span><span>Open</span></div>
+                  <div><span>Status</span><span>In prep</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===================================== 03 · the collaboratory -->
+      <section class="section" id="collaboratory" aria-labelledby="collab-title">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">03 / The Collaboratory</p>
+            <h2 id="collab-title">From <em>signal</em> to substance.</h2>
+          </div>
+          <p class="lede">
+            One material, two lenses. Drag the divider to move between the
+            computed structure and the rendered result.
+          </p>
+        </div>
+
+        <div
+          class="slider"
+          id="collab-slider"
+          role="slider"
+          tabindex="0"
+          aria-label="Comparison between computed input and rendered output"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="50"
+        >
+          <img src="assets/collab-output.jpg" alt="Rendered output — artistic form" loading="lazy" />
+          <div class="slider-top">
+            <img src="assets/collab-input.jpg" alt="Computed input — raw field" loading="lazy" />
+          </div>
+          <div class="slider-handle" aria-hidden="true"></div>
+          <p class="slider-tag">INPUT · COMPUTATION</p>
+          <p class="slider-tag right">OUTPUT · RENDER</p>
+        </div>
+        <p class="slider-caption">
+          Demonstration pair — a computed field resolving into rendered form.
         </p>
       </section>
 
-      <section class="section" id="field" aria-labelledby="field-title">
-        <div class="section-heading">
-          <p class="mono-label"><span class="dot"></span>03 / Field notes</p>
-          <h2 id="field-title">What we are reading and watching.</h2>
+      <!-- ============================================= 04 · dispatch -->
+      <section class="section" id="dispatch" aria-labelledby="dispatch-title">
+        <div class="section-head board-heading">
+          <div>
+            <p class="eyebrow">04 / Dispatch</p>
+            <h2 id="dispatch-title">Field <em>notes</em> &amp; dispatches.</h2>
+          </div>
+          <div>
+            <p class="lede">
+              Short updates, published results, and notes between experiments —
+              published by the lab, served from its own backend.
+            </p>
+            <p class="board-status"><span class="status-dot"></span>Live</p>
+          </div>
         </div>
-        <div class="work-grid">
-          <article class="work-card">
-            <p class="id">Reference</p>
-            <h3>A foundation model for atomistic chemistry</h3>
-            <p>Message-passing potentials achieving chemically accurate interatomic models across the periodic table.</p>
-            <div class="metrics">
-              <div><span>Venue</span><span>J. Chem. Phys. 2025</span></div>
-              <div><span>Authors</span><span>Batatia et al.</span></div>
+        <div id="noticeboard" class="noticeboard" aria-live="polite"></div>
+        <p class="board-note">
+          Public posting and moderated comments are in preparation; there is no
+          public submission form. Updates are published by the lab.
+        </p>
+      </section>
+
+      <!-- ========================================= 06 · reading room -->
+      <section class="narrow readings-section" id="reading" aria-labelledby="reading-title">
+        <div class="readings-head">
+          <div>
+            <p class="eyebrow">SECTION · 06 / READING ROOM</p>
+            <h2 id="reading-title">Recent <em>material research</em></h2>
+          </div>
+          <p class="lede">
+            Peer-reviewed work from international institutions, indexed for the
+            Open Matter archive.
+          </p>
+        </div>
+
+        <ul class="readings-list">
+          <li><a class="reading-row" href="https://doi.org/10.1038/s41586-025-08628-5" target="_blank" rel="noopener noreferrer">
+            <span class="reading-num">01</span>
+            <div>
+              <h3>A generative model for inorganic materials design</h3>
+              <p class="reading-sum">A diffusion model that proposes millions of novel stable crystal structures, vastly expanding the catalogue of synthesizable inorganic materials.</p>
+              <p class="reading-meta">Zeni et al. · Google DeepMind · Nature · 2025</p>
             </div>
-          </article>
-          <article class="work-card">
-            <p class="id">Reference</p>
-            <h3>Scaling deep learning for materials discovery</h3>
-            <p>Predicting millions of candidate crystals, with hundreds of thousands stable toward synthesis.</p>
-            <div class="metrics">
-              <div><span>Venue</span><span>Nature 2023</span></div>
-              <div><span>Authors</span><span>Merchant et al.</span></div>
+            <span class="reading-arrow" aria-hidden="true">↗</span>
+          </a></li>
+          <li><a class="reading-row" href="https://doi.org/10.1038/s41586-023-06735-9" target="_blank" rel="noopener noreferrer">
+            <span class="reading-num">02</span>
+            <div>
+              <h3>Scaling deep learning for materials discovery</h3>
+              <p class="reading-sum">DeepMind's GNoME model predicts 2.2 million new crystals, including 380,000 stable materials poised for experimental synthesis.</p>
+              <p class="reading-meta">Merchant et al. · Google DeepMind · Nature · 2023</p>
             </div>
-          </article>
-          <article class="work-card">
-            <p class="id">Practice</p>
-            <h3>Matter as an artistic medium</h3>
-            <p>Studios and exhibitions that make material change visible — ice, light, woven structures, printed chitin.</p>
-            <div class="metrics">
-              <div><span>Mode</span><span>Exhibition</span></div>
-              <div><span>Field</span><span>Art × Science</span></div>
+            <span class="reading-arrow" aria-hidden="true">↗</span>
+          </a></li>
+          <li><a class="reading-row" href="https://doi.org/10.1063/5.0297006" target="_blank" rel="noopener noreferrer">
+            <span class="reading-num">03</span>
+            <div>
+              <h3>A foundation model for atomistic materials chemistry (MACE)</h3>
+              <p class="reading-sum">A message-passing neural network that achieves chemically accurate interatomic potentials across the periodic table at low computational cost.</p>
+              <p class="reading-meta">Batatia et al. · University of Cambridge · J. Chem. Phys. · 2025</p>
             </div>
-          </article>
+            <span class="reading-arrow" aria-hidden="true">↗</span>
+          </a></li>
+          <li><a class="reading-row" href="https://www.nature.com/articles/s42256-026-01214-y" target="_blank" rel="noopener noreferrer">
+            <span class="reading-num">04</span>
+            <div>
+              <h3>MatterChat: a multimodal large language model for materials science</h3>
+              <p class="reading-sum">An LLM that reasons over crystal structures, predicting properties and proposing synthesis routes from natural-language queries.</p>
+              <p class="reading-meta">Tang et al. · Multi-institution · Nature Comp. Sci. · 2026</p>
+            </div>
+            <span class="reading-arrow" aria-hidden="true">↗</span>
+          </a></li>
+          <li><a class="reading-row" href="https://arxiv.org/abs/2609.20639" target="_blank" rel="noopener noreferrer">
+            <span class="reading-num">05</span>
+            <div>
+              <h3>First-principles theory of phonon renormalization from nonlinear electron-phonon interactions</h3>
+              <p class="reading-sum">A new ab-initio framework for how electrons reshape lattice vibrations — relevant to phonon densities of states in oxide lattices.</p>
+              <p class="reading-meta">Kluibenschedl et al. · University of Vienna · arXiv · 2026</p>
+            </div>
+            <span class="reading-arrow" aria-hidden="true">↗</span>
+          </a></li>
+          <li><a class="reading-row" href="https://arxiv.org/abs/2609.20486" target="_blank" rel="noopener noreferrer">
+            <span class="reading-num">06</span>
+            <div>
+              <h3>Strain-induced metal-to-insulator transition in antiferromagnetic SrCrO₃ thin films</h3>
+              <p class="reading-sum">Epitaxial strain toggles the electronic phase of a correlated oxide — a model for tunable quantum-material substrates.</p>
+              <p class="reading-meta">Jöhr et al. · Paul Scherrer Institute · arXiv · 2026</p>
+            </div>
+            <span class="reading-arrow" aria-hidden="true">↗</span>
+          </a></li>
+        </ul>
+      </section>
+
+      <!-- ========================================= 07 · convergence -->
+      <section class="narrow convergence-section" id="convergence" aria-labelledby="convergence-title">
+        <div class="readings-head">
+          <div>
+            <p class="eyebrow">SECTION · 07 / CONVERGENCE</p>
+            <h2 id="convergence-title">Where <em>art</em> meets matter</h2>
+          </div>
+          <p class="lede">
+            Artists and institutions experimenting with media, metals, and
+            materials — the collaborative community Open Matter is built for.
+          </p>
+        </div>
+
+        <div class="convergence-grid">
+          <a class="convergence-cell" href="https://www.olafureliasson.net/" target="_blank" rel="noopener noreferrer">
+            <h3>Olafur Eliasson</h3>
+            <p class="convergence-medium">Ice, light, chromatic perception</p>
+            <p class="convergence-note">Glacial ice casts and spectral installations that make material change visible to the body.</p>
+            <p class="convergence-loc">Studio Olafur Eliasson · Berlin</p>
+          </a>
+          <a class="convergence-cell" href="https://studiotomassaraceno.org/" target="_blank" rel="noopener noreferrer">
+            <h3>Tomás Saraceno</h3>
+            <p class="convergence-medium">Aerospace fabrics, spider silk</p>
+            <p class="convergence-note">Lighter-than-air sculptures and woven spider-web architectures that listen to nonhuman matter.</p>
+            <p class="convergence-loc">Studio Tomás Saraceno · Berlin</p>
+          </a>
+          <a class="convergence-cell" href="https://www.dezeen.com/tag/neri-oxman/" target="_blank" rel="noopener noreferrer">
+            <h3>Neri Oxman</h3>
+            <p class="convergence-medium">3D-printed chitin, material ecology</p>
+            <p class="convergence-note">Computational design that grows biological materials — chitin, cellulose — into structural form.</p>
+            <p class="convergence-loc">Mediated Matter · MIT</p>
+          </a>
+          <a class="convergence-cell" href="https://smartmuseum.uchicago.edu/exhibitions/the-allure-of-matter-material-art-from-china/" target="_blank" rel="noopener noreferrer">
+            <h3>The Allure of Matter</h3>
+            <p class="convergence-medium">Material art from China</p>
+            <p class="convergence-note">Decades of artists transforming everyday matter — plastic, ash, hair — into large-scale work.</p>
+            <p class="convergence-loc">Smart Museum · University of Chicago</p>
+          </a>
+          <a class="convergence-cell" href="https://www.craftcontemporary.org/exhibitions/materialacts/" target="_blank" rel="noopener noreferrer">
+            <h3>Material Acts</h3>
+            <p class="convergence-medium">Architecture &amp; design experimentation</p>
+            <p class="convergence-note">Design practices that mobilize, confound, and generate natures through matter.</p>
+            <p class="convergence-loc">Craft Contemporary · Los Angeles</p>
+          </a>
+          <a class="convergence-cell" href="https://mrs.groups.stanford.edu/art-science/art-science-2024" target="_blank" rel="noopener noreferrer">
+            <h3>Art of Science</h3>
+            <p class="convergence-medium">Materials research as visual art</p>
+            <p class="convergence-note">An annual exhibition bridging graduate materials research and sculptural output.</p>
+            <p class="convergence-loc">Stanford Materials Research Society</p>
+          </a>
         </div>
       </section>
 
-      <section class="section" id="about" aria-labelledby="about-title">
-        <div class="about-panel">
-          <p class="mono-label"><span class="dot"></span>04 / About</p>
-          <h2 id="about-title" style="font-size: clamp(2rem, 4vw, 3.4rem); line-height:1.05;">
-            A small, independent home for open evidence.
-          </h2>
-          <p>
-            The lab is beginning with materials science and data papers. Results will be
-            selected, documented, and published here without exposing private research
-            repositories or unfinished computational infrastructure.
+      <!-- ====================================== 05 · the work ledger -->
+      <section class="section" id="ledger" aria-labelledby="ledger-title">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">05 / The Work Ledger</p>
+            <h2 id="ledger-title">Fund a <em>breakthrough</em>.</h2>
+          </div>
+          <p class="lede">
+            Open Matter Labs is a public-benefit effort. Contributions and
+            collaborations keep the computations running and the results open.
           </p>
-          <button class="text-link email-reveal" type="button">Show contact email</button>
-          <noscript><p class="muted">Enable JavaScript to reveal the contact email.</p></noscript>
+        </div>
+
+        <div class="ledger-grid">
+          <div class="ledger-panel">
+            <div class="ledger-top">
+              <span>LIVE SIGNAL · RESEARCH PIPELINES</span>
+              <span class="ledger-live"><span class="pulse-dot" aria-hidden="true"></span>TRANSMITTING</span>
+            </div>
+            <div class="ledger-row">
+              <div>
+                <div class="name">Oxide dielectric study</div>
+                <div class="detail">DFT · MLIP · NEB BARRIERS</div>
+              </div>
+              <div class="value">RUNNING</div>
+            </div>
+            <div class="ledger-row">
+              <div>
+                <div class="name">Structure screening</div>
+                <div class="detail">CASMI · HIGH-THROUGHPUT</div>
+              </div>
+              <div class="value">RUNNING</div>
+            </div>
+            <div class="ledger-row">
+              <div>
+                <div class="name">Open data papers</div>
+                <div class="detail">PROVENANCE · CHARTS</div>
+              </div>
+              <div class="value">IN PREP</div>
+            </div>
+            <div class="ledger-wave" id="ledger-wave" aria-hidden="true"></div>
+          </div>
+
+          <div class="ledger-side">
+            <a class="support-card" href="mailto:inquiries@openmatterlabs.org">
+              <div>
+                <div class="support-name">SUPPORT</div>
+                <div class="support-line">Fund a computation.</div>
+                <div class="support-desc">Sponsor CPU time, storage, and publication costs.</div>
+              </div>
+              <span class="support-go" aria-hidden="true">→</span>
+            </a>
+            <a class="support-card" href="mailto:contact@openmatterlabs.org">
+              <div>
+                <div class="support-name">COLLABORATE</div>
+                <div class="support-line">Work with the lab.</div>
+                <div class="support-desc">Artists, scientists, and human-rights organizations welcome.</div>
+              </div>
+              <span class="support-go" aria-hidden="true">→</span>
+            </a>
+          </div>
         </div>
       </section>
     </main>
 
-    <footer class="site-footer">
-      <div class="footer-cta">
-        <p class="mono-label"><span class="dot"></span>05 / Transmit</p>
-        <h2 class="display">Begin a conversation, <em>or just listen in</em>.</h2>
-      </div>
-      <div class="footer-meta">
-        <button class="text-link email-reveal" type="button">Reveal contact email</button>
-        <span>© 2026 Open Matter Labs</span>
-        <span>openmatterlabs.org</span>
+    <!-- ========================================= 08 · transmit / footer -->
+    <footer class="site-footer" id="contact">
+      <div class="footer-inner">
+        <div class="footer-cta">
+          <div>
+            <p class="eyebrow">08 / Transmit</p>
+            <h2>Begin a <em>conversation</em>, or just listen in.</h2>
+            <!-- The address, printed plainly — no click required. -->
+            <p class="contact-plain">Contact: <a href="mailto:inquiries@openmatterlabs.org">inquiries@openmatterlabs.org</a></p>
+          </div>
+          <a class="contact-line" href="mailto:inquiries@openmatterlabs.org">
+            <span class="go" aria-hidden="true">→</span>
+            INQUIRIES@OPENMATTERLABS.ORG
+          </a>
+        </div>
+
+        <div class="footer-nodes">
+          <div class="nodes-top">
+            <span>WRITE TO THE LAB · 06 CHANNELS</span>
+            <span class="nodes-note">ALL ADDRESSES MONITORED</span>
+          </div>
+          <div class="nodes-row">
+            <a class="node-item" href="mailto:inquiries@openmatterlabs.org">
+              <span class="ndot" aria-hidden="true"></span>
+              <span>
+                <span class="nname">Inquiries</span>
+                <span class="ncoord">inquiries@openmatterlabs.org</span>
+              </span>
+            </a>
+            <a class="node-item" href="mailto:contact@openmatterlabs.org">
+              <span class="ndot" aria-hidden="true"></span>
+              <span>
+                <span class="nname">Contact</span>
+                <span class="ncoord">contact@openmatterlabs.org</span>
+              </span>
+            </a>
+            <a class="node-item" href="mailto:hq@openmatterlabs.org">
+              <span class="ndot" aria-hidden="true"></span>
+              <span>
+                <span class="nname">HQ</span>
+                <span class="ncoord">hq@openmatterlabs.org</span>
+              </span>
+            </a>
+            <a class="node-item" href="mailto:members@openmatterlabs.org">
+              <span class="ndot" aria-hidden="true"></span>
+              <span>
+                <span class="nname">Members</span>
+                <span class="ncoord">members@openmatterlabs.org</span>
+              </span>
+            </a>
+            <a class="node-item" href="https://github.com/vornvoskhq" target="_blank" rel="noopener noreferrer">
+              <span class="ndot" aria-hidden="true"></span>
+              <span>
+                <span class="nname">GitHub</span>
+                <span class="ncoord">github.com/vornvoskhq</span>
+              </span>
+            </a>
+            <a class="node-item" href="#dispatch">
+              <span class="ndot" aria-hidden="true"></span>
+              <span>
+                <span class="nname">Dispatch</span>
+                <span class="ncoord">openmatterlabs.org/#dispatch</span>
+              </span>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-base">
+          <span class="brand-tag">
+            <span class="topbar-dot" aria-hidden="true"></span>
+            <strong>OPEN MATTER</strong>
+            <span>MATERIAL RESEARCH &amp; PUBLIC-BENEFIT LAB</span>
+          </span>
+          <span class="base-links">
+            <a href="https://github.com/vornvoskhq" target="_blank" rel="noopener noreferrer">GITHUB</a>
+            <a href="#dispatch">DISPATCH</a>
+            <a href="#reading">READING</a>
+            <a href="#top">TOP</a>
+          </span>
+          <span>© MMXXVI · ALL SIGNALS RESERVED</span>
+        </div>
       </div>
     </footer>
+
     <script src="app.js" defer></script>
   </body>
 </html>

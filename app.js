@@ -1,18 +1,17 @@
-// Open Matter Labs — site behavior for the "signal" theme.
+// Open Matter Labs — site behavior for the "signal" theme (base44 presentation).
 // No secrets belong in this file. The board backend is read-only from here:
 // posting and moderation live server-side in the private openmatter-board repo.
+// The contact email is printed plainly in the HTML (per owner decision) — no
+// obfuscation layer anymore, so there is nothing to assemble at runtime.
 
 const BOARD_ENDPOINT = "https://glad-dalmatian-963.convex.site/public/posts";
 const BOARD_ORIGIN = "https://glad-dalmatian-963.convex.site";
-
-// Assembly-encoded contact address. The full string never appears in HTML source.
-const EMAIL_PARTS = ["inquiries", "openmatterlabs.org"];
 
 const prefersReducedMotion = window.matchMedia(
   "(prefers-reduced-motion: reduce)"
 ).matches;
 
-const posts = [
+const fallbackPosts = [
   {
     date: "19 Sep 2026",
     title: "Open Matter Labs is beginning",
@@ -30,22 +29,9 @@ const posts = [
   {
     date: "In preparation",
     title: "A small public noticeboard",
-    text: "Secure moderated posting and comments will arrive after the site’s backend and moderation rules are reviewed.",
+    text: "Secure moderated posting and comments will arrive after the site's backend and moderation rules are reviewed.",
     image: "",
     link: "",
-  },
-];
-
-const bookmarks = [
-  {
-    label: "Open Matter Labs",
-    url: "https://openmatterlabs.org/",
-    desc: "This site — public notices and selected results.",
-  },
-  {
-    label: "GitHub — vornvoskhq",
-    url: "https://github.com/vornvoskhq",
-    desc: "Public code and organization presence.",
   },
 ];
 
@@ -107,70 +93,137 @@ async function loadPosts() {
     // Network/CORS failure — fall back to the bundled preview below.
   }
 
-  if (remote) {
-    board.replaceChildren();
-    for (const post of remote) {
-      renderPost(
-        {
-          date: post.date,
-          title: post.title,
-          text: post.body,
-          image: post.image || "",
-          link: post.externalUrl || "",
-        },
-        board
-      );
-    }
-  } else {
-    for (const post of posts) {
-      renderPost(post, board);
-    }
+  board.replaceChildren();
+  const source = remote || fallbackPosts;
+  for (const post of source) {
+    renderPost(
+      {
+        date: post.date,
+        title: post.title,
+        text: post.body || post.text,
+        image: post.image || "",
+        link: post.externalUrl || post.link || "",
+      },
+      board
+    );
   }
 }
 
-function renderBookmarks() {
-  const grid = document.querySelector("#bookmarks-grid");
-  if (!grid) return;
+// Archive of Matter: horizontal specimen scroller with prev/next controls
+// and a 01—0N counter, matching the reference's gallery behavior.
+function setupArchive() {
+  const scroller = document.querySelector("#archive-scroller");
+  if (!scroller) return;
 
-  bookmarks.forEach((bookmark, index) => {
-    const row = document.createElement("article");
-    row.className = "bookmark";
+  const prev = document.querySelector("#archive-prev");
+  const next = document.querySelector("#archive-next");
+  const count = document.querySelector("#archive-count");
+  const total = scroller.querySelectorAll(".specimen").length;
 
-    const num = document.createElement("span");
-    num.className = "bookmark-index";
-    num.textContent = String(index + 1).padStart(2, "0");
-
-    const link = document.createElement("a");
-    link.href = bookmark.url;
-    link.textContent = bookmark.label;
-    if (/^https?:\/\//i.test(bookmark.url)) {
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
+  function step() {
+    const specimen = scroller.querySelector(".specimen");
+    return specimen ? specimen.getBoundingClientRect().width + 24 : 444;
+  }
+  function visibleIndex() {
+    return Math.min(
+      total - 1,
+      Math.round(scroller.scrollLeft / step())
+    );
+  }
+  function refreshCount() {
+    if (count) {
+      count.textContent =
+        String(visibleIndex() + 1).padStart(2, "0") +
+        " — " +
+        String(total).padStart(2, "0") +
+        " SPECIMENS";
     }
+  }
 
-    const desc = document.createElement("span");
-    desc.className = "bookmark-desc";
-    desc.textContent = bookmark.desc;
-
-    row.append(num, link, desc);
-    grid.append(row);
-  });
+  if (prev) {
+    prev.addEventListener("click", () => {
+      scroller.scrollBy({ left: -step(), behavior: "smooth" });
+    });
+  }
+  if (next) {
+    next.addEventListener("click", () => {
+      scroller.scrollBy({ left: step(), behavior: "smooth" });
+    });
+  }
+  scroller.addEventListener("scroll", refreshCount, { passive: true });
+  refreshCount();
 }
 
-function setupEmailReveal() {
-  const buttons = document.querySelectorAll(".email-reveal");
-  if (buttons.length === 0) return;
+// Collaboratory: drag/keyboard comparison slider between input and output.
+function setupSlider() {
+  const slider = document.querySelector("#collab-slider");
+  if (!slider) return;
 
-  buttons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const address = EMAIL_PARTS[0] + "@" + EMAIL_PARTS[1];
-      const link = document.createElement("a");
-      link.href = "mailto:" + address;
-      link.className = "text-link";
-      link.textContent = address;
-      button.replaceWith(link);
-    });
+  const top = slider.querySelector(".slider-top");
+  const handle = slider.querySelector(".slider-handle");
+  if (!top || !handle) return;
+
+  let pos = 50;
+
+  function apply() {
+    top.style.width = pos + "%";
+    // Keep the clipped image aligned with the container while the top layer
+    // shrinks: the inner image is sized to the full slider width.
+    const innerImg = top.querySelector("img");
+    if (innerImg) {
+      innerImg.style.width = slider.clientWidth + "px";
+    }
+    handle.style.left = pos + "%";
+    slider.setAttribute("aria-valuenow", String(Math.round(pos)));
+  }
+
+  function updateFromClientX(clientX) {
+    const rect = slider.getBoundingClientRect();
+    pos = Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100));
+    apply();
+  }
+
+  let dragging = false;
+  slider.addEventListener("pointerdown", (event) => {
+    dragging = true;
+    slider.setPointerCapture(event.pointerId);
+    updateFromClientX(event.clientX);
   });
+  slider.addEventListener("pointermove", (event) => {
+    if (dragging) updateFromClientX(event.clientX);
+  });
+  slider.addEventListener("pointerup", () => {
+    dragging = false;
+  });
+  slider.addEventListener("pointercancel", () => {
+    dragging = false;
+  });
+  slider.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") {
+      pos = Math.max(0, pos - 4);
+      apply();
+    } else if (event.key === "ArrowRight") {
+      pos = Math.min(100, pos + 4);
+      apply();
+    }
+  });
+
+  if (!prefersReducedMotion) {
+    window.addEventListener("resize", apply, { passive: true });
+  }
+  apply();
+}
+
+// Ledger waveform: bars with randomized peak heights, CSS-animated.
+function setupWave() {
+  const wave = document.querySelector("#ledger-wave");
+  if (!wave) return;
+  for (let i = 0; i < 60; i += 1) {
+    const bar = document.createElement("span");
+    bar.style.setProperty("--h", (6 + Math.random() * 36).toFixed(0) + "px");
+    bar.style.animationDelay = (i * 0.03).toFixed(2) + "s";
+    wave.append(bar);
+  }
 }
 
 // Hero particle layer: slow drifting motes with a signal-tinted glow.
@@ -330,8 +383,9 @@ function setupCursor() {
 }
 
 loadPosts();
-renderBookmarks();
-setupEmailReveal();
+setupArchive();
+setupSlider();
+setupWave();
 setupFieldGrid();
 setupCursor();
 setupParticles();
