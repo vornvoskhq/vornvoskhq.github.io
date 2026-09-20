@@ -176,9 +176,7 @@ function setupAnchorNavigation() {
       if (!target) return;
 
       event.preventDefault();
-      const header = document.querySelector(".hero-topbar");
-      const offset = header ? header.getBoundingClientRect().height : 0;
-      const destination = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
+      const destination = target.offsetTop;
       const duration = prefersReducedMotion ? 0 : 700;
 
       document.documentElement.classList.add("is-jumping");
@@ -189,13 +187,14 @@ function setupAnchorNavigation() {
   });
 }
 
-// Panel navigation: keep the current major section visible in the fixed navigator.
+// Panel navigation: keep the current major section visible in navigation and support arrow key jumping.
 function setupPanelNavigation() {
-  const links = Array.from(document.querySelectorAll(".panel-nav-link"));
-  if (!links.length) return;
-
-  const sections = links
-    .map((link) => document.querySelector(link.getAttribute("href")))
+  const links = Array.from(
+    document.querySelectorAll(".desktop-nav a, .nav-mobile-inner a, .panel-nav-link")
+  );
+  const sectionIds = ["top", "archive", "collaboratory", "dispatch", "reading", "convergence", "ledger", "contact"];
+  const sections = sectionIds
+    .map((id) => document.getElementById(id))
     .filter(Boolean);
   if (!sections.length) return;
 
@@ -210,7 +209,12 @@ function setupPanelNavigation() {
 
   const goToPanel = (index) => {
     const nextIndex = Math.max(0, Math.min(sections.length - 1, index));
-    sections[nextIndex].scrollIntoView({ behavior: "smooth", block: "start" });
+    const destination = sections[nextIndex].offsetTop;
+    const duration = prefersReducedMotion ? 0 : 700;
+    document.documentElement.classList.add("is-jumping");
+    window.history.replaceState(null, "", "#" + sections[nextIndex].id);
+    window.scrollTo({ top: destination, behavior: duration ? "smooth" : "auto" });
+    window.setTimeout(() => document.documentElement.classList.remove("is-jumping"), duration + 150);
     setActive(sections[nextIndex]);
   };
 
@@ -368,9 +372,7 @@ function setupSlider() {
     }
   });
 
-  if (!prefersReducedMotion) {
-    window.addEventListener("resize", apply, { passive: true });
-  }
+  window.addEventListener("resize", apply, { passive: true });
   apply();
 }
 
