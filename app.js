@@ -109,6 +109,35 @@ async function loadPosts() {
   }
 }
 
+// Navigation: Mobile toggle and overlay logic.
+function setupNavigation() {
+  const toggle = document.querySelector("#nav-toggle");
+  const mobileNav = document.querySelector("#nav-mobile");
+  if (!toggle || !mobileNav) return;
+
+  function setOpen(open) {
+    toggle.setAttribute("aria-expanded", String(open));
+    mobileNav.setAttribute("aria-hidden", String(!open));
+    mobileNav.inert = !open;
+    document.body.style.overflow = open ? "hidden" : "";
+  }
+
+  setOpen(false);
+
+  toggle.addEventListener("click", () => {
+    const open = toggle.getAttribute("aria-expanded") === "true";
+    setOpen(!open);
+  });
+
+  mobileNav.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => setOpen(false));
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setOpen(false);
+  });
+}
+
 // Archive of Matter: horizontal specimen scroller with prev/next controls
 // and a 01—0N counter, matching the reference's gallery behavior.
 function setupArchive() {
@@ -264,7 +293,11 @@ function setupParticles() {
     canvas.width = width * ratio;
     canvas.height = height * ratio;
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-    const count = Math.min(140, Math.floor((width * height) / 12000));
+
+    // Reduce particle count on smaller screens
+    const density = width < 768 ? 20000 : 12000;
+    const count = Math.min(140, Math.floor((width * height) / density));
+
     particles = Array.from({ length: count }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
@@ -368,7 +401,11 @@ function setupFieldGrid() {
 // Crosshair cursor with a frequency readout. Fine pointers only.
 function setupCursor() {
   if (prefersReducedMotion) return;
-  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  // Strictly only enable for fine pointers (mouse) and where hover is supported.
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    document.body.classList.remove("cursor-override");
+    return;
+  }
 
   const dot = document.querySelector("#cursor-dot");
   const ring = document.querySelector("#cursor-ring");
@@ -382,12 +419,19 @@ function setupCursor() {
   let ringX = -100;
   let ringY = -100;
   let freq = 432;
+  let active = false;
 
   window.addEventListener(
     "mousemove",
     (event) => {
       targetX = event.clientX;
       targetY = event.clientY;
+      if (!active) {
+        active = true;
+        dot.style.display = "block";
+        ring.style.display = "block";
+        readout.style.display = "block";
+      }
       const interactive =
         event.target instanceof Element &&
         event.target.closest("a, button, input, textarea, [data-cursor='hover']");
@@ -402,15 +446,18 @@ function setupCursor() {
   );
 
   function loop() {
-    ringX += (targetX - ringX) * 0.18;
-    ringY += (targetY - ringY) * 0.18;
-    ring.style.transform = "translate(" + ringX + "px," + ringY + "px)";
+    if (active) {
+      ringX += (targetX - ringX) * 0.15;
+      ringY += (targetY - ringY) * 0.15;
+      ring.style.transform = "translate(" + ringX + "px," + ringY + "px)";
+    }
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
 }
 
 loadPosts();
+setupNavigation();
 setupArchive();
 setupSlider();
 setupScrollFrequency();

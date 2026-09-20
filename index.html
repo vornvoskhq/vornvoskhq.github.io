@@ -45,14 +45,27 @@
             <span class="topbar-dot" aria-hidden="true"></span>
             OPEN MATTER
           </a>
-          <nav aria-label="Primary navigation">
+          <nav class="desktop-nav" aria-label="Primary navigation">
             <a href="#archive">Archive</a>
             <a href="#collaboratory">Collaboratory</a>
             <a href="#ledger">Ledger</a>
             <a href="#contact">Contact</a>
           </nav>
+          <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-mobile">
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+          </button>
           <span class="topbar-est">EST. MMXXVI</span>
         </div>
+
+        <nav class="nav-mobile" id="nav-mobile" aria-label="Mobile navigation" aria-hidden="true">
+          <div class="nav-mobile-inner">
+            <a href="#archive">Archive</a>
+            <a href="#collaboratory">Collaboratory</a>
+            <a href="#ledger">Ledger</a>
+            <a href="#contact">Contact</a>
+          </div>
+        </nav>
 
         <div class="hero-inner">
           <p class="eyebrow">Material research&nbsp;&nbsp;/&nbsp;&nbsp;Art foundation</p>
