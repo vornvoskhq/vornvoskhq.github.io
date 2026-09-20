@@ -93,7 +93,7 @@ em { color: var(--signal); font-style: italic; }
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 }
 .narrow {
   width: min(calc(100% - 48px), 1152px);
@@ -503,13 +503,13 @@ nav a:hover { color: var(--signal); }
 .archive-scroller::-webkit-scrollbar { display: none; }
 
 .specimen {
-  width: min(420px, 78vw);
+  width: min(380px, 76vw);
   flex: none;
-  scroll-snap-align: center;
+  scroll-snap-align: start;
 }
 .specimen-frame {
   position: relative;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -854,7 +854,7 @@ nav a:hover { color: var(--signal); }
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   scroll-snap-align: start;
   scroll-margin-top: 1px;
 }
@@ -1502,4 +1502,8 @@ header.site-header, main, .site-footer { position: relative; z-index: 2; }
   .convergence-cell { min-height: 260px; border: 1px solid var(--line); }
   .residency-meta { margin-top: 40px; }
   .residency-meta article { border: 1px solid var(--line); padding: 20px; min-height: 220px; }
+  .specimen { width: min(76vw, 310px); }
+  .specimen-body { padding: 18px; }
+  .specimen-body h3 { font-size: 1.45rem; }
+  .specimen-body > p { font-size: 0.86rem; }
 }
