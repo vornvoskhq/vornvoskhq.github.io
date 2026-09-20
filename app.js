@@ -141,11 +141,12 @@ function setupNavigation() {
 // Panel navigation: keep the current major section visible in the fixed navigator.
 function setupPanelNavigation() {
   const links = Array.from(document.querySelectorAll(".panel-nav-link"));
-  if (!links.length || !("IntersectionObserver" in window)) return;
+  if (!links.length) return;
 
   const sections = links
     .map((link) => document.querySelector(link.getAttribute("href")))
     .filter(Boolean);
+  if (!sections.length) return;
 
   const setActive = (section) => {
     links.forEach((link) => {
@@ -156,6 +157,31 @@ function setupPanelNavigation() {
     });
   };
 
+  const goToPanel = (index) => {
+    const nextIndex = Math.max(0, Math.min(sections.length - 1, index));
+    sections[nextIndex].scrollIntoView({ behavior: "smooth", block: "start" });
+    setActive(sections[nextIndex]);
+  };
+
+  document.addEventListener("keydown", (event) => {
+    if (!["ArrowDown", "ArrowUp", "PageDown", "PageUp"].includes(event.key)) return;
+    if (event.target instanceof HTMLElement && event.target.closest("input, textarea, select, [contenteditable='true']")) return;
+
+    const position = window.scrollY + window.innerHeight * 0.35;
+    let currentIndex = 0;
+    sections.forEach((section, index) => {
+      if (section.offsetTop <= position) currentIndex = index;
+    });
+
+    const direction = event.key === "ArrowUp" || event.key === "PageUp" ? -1 : 1;
+    const nextIndex = currentIndex + direction;
+    if (nextIndex < 0 || nextIndex >= sections.length) return;
+
+    event.preventDefault();
+    goToPanel(nextIndex);
+  });
+
+  if (!("IntersectionObserver" in window)) return;
   const observer = new IntersectionObserver(
     (entries) => {
       const visible = entries
