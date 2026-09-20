@@ -88,7 +88,7 @@ em { color: var(--signal); font-style: italic; }
   width: min(calc(100% - 48px), var(--max));
   max-width: calc(100% - 48px);
   margin-inline: auto;
-  padding-block: clamp(56px, 8vh, 112px);
+  padding-block: clamp(32px, 5vh, 72px);
   scroll-snap-align: start;
   scroll-margin-top: 84px;
   scroll-snap-stop: always;
@@ -110,7 +110,7 @@ em { color: var(--signal); font-style: italic; }
   grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
   gap: 24px;
   align-items: end;
-  margin-bottom: 64px;
+  margin-bottom: clamp(28px, 4vh, 48px);
 }
 .section-head > * { min-width: 0; }
 .section-head h2 {
@@ -467,7 +467,7 @@ nav a:hover { color: var(--signal); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 .archive-count {
   font-family: var(--font-mono);
@@ -513,7 +513,7 @@ nav a:hover { color: var(--signal); }
 }
 .specimen-frame {
   position: relative;
-  height: clamp(320px, calc(100svh - 330px), 475px);
+  height: clamp(280px, calc(100svh - 460px), 420px);
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -867,7 +867,7 @@ nav a:hover { color: var(--signal); }
   display: flex;
   flex-direction: column;
   gap: 24px;
-  margin-bottom: 64px;
+  margin-bottom: clamp(28px, 4vh, 48px);
 }
 @media (min-width: 768px) {
   .readings-head { flex-direction: row; align-items: flex-end; justify-content: space-between; }
@@ -1498,4 +1498,56 @@ header.site-header, main, .site-footer { position: relative; z-index: 2; }
   .specimen-body { padding: 18px; }
   .specimen-body h3 { font-size: 1.45rem; }
   .specimen-body > p { font-size: 0.86rem; }
+}
+
+/* Panel collections are galleries at every viewport size. Keeping the cards
+ * on one horizontal track preserves the height budget of each snap panel. */
+.noticeboard,
+.readings-list,
+.convergence-grid,
+.residency-meta,
+.dispatch-list {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+}
+.noticeboard::-webkit-scrollbar,
+.readings-list::-webkit-scrollbar,
+.convergence-grid::-webkit-scrollbar,
+.residency-meta::-webkit-scrollbar,
+.dispatch-list::-webkit-scrollbar { display: none; }
+.notice,
+.readings-list > li,
+.convergence-cell,
+.residency-meta article,
+.dispatch-row {
+  flex: 0 0 min(34vw, 460px);
+  scroll-snap-align: start;
+}
+.reading-row {
+  height: 100%;
+  padding: 26px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+.convergence-grid { border: 0; background: none; }
+.convergence-cell { min-height: 260px; border: 1px solid var(--line); }
+.residency-meta article { min-height: 210px; }
+.dispatch-list { border-top: 0; }
+.dispatch-row { border: 1px solid var(--line); padding: 20px; }
+
+@media (min-width: 768px) {
+  .section { padding-block: clamp(32px, 5vh, 72px); }
+  .readings-section, .convergence-section { padding-block: clamp(32px, 5vh, 72px); }
+}
+
+@media (max-width: 767px) {
+  .notice,
+  .readings-list > li,
+  .convergence-cell,
+  .residency-meta article,
+  .dispatch-row { flex-basis: min(82vw, 360px); }
+  .specimen-frame { height: clamp(280px, calc(100svh - 430px), 380px); }
 }
