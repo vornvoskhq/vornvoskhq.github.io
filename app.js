@@ -242,7 +242,7 @@ function setupPanelNavigation() {
   updateFromScroll();
 
   document.addEventListener("keydown", (event) => {
-    if (!["ArrowDown", "ArrowUp", "PageDown", "PageUp"].includes(event.key)) return;
+    if (!["ArrowDown", "ArrowUp"].includes(event.key)) return;
     if (event.target instanceof HTMLElement && event.target.closest("input, textarea, select, [contenteditable='true']")) return;
 
     const position = window.scrollY + window.innerHeight * 0.35;
@@ -251,7 +251,7 @@ function setupPanelNavigation() {
       if (section.offsetTop <= position) currentIndex = index;
     });
 
-    const direction = event.key === "ArrowUp" || event.key === "PageUp" ? -1 : 1;
+    const direction = event.key === "ArrowUp" ? -1 : 1;
     const nextIndex = currentIndex + direction;
     if (nextIndex < 0 || nextIndex >= sections.length) return;
 
@@ -273,8 +273,9 @@ function setupPanelNavigation() {
   sections.forEach((section) => observer.observe(section));
 }
 
-// Archive of Matter: horizontal specimen scroller with prev/next controls
-// and a 01—0N counter, matching the reference's gallery behavior.
+// Archive of Matter: vertical, top-aligned snap cards. Trackpad and touch
+// scrolling use the browser's native vertical gesture; the buttons provide
+// an explicit alternative without introducing a nested scrolling surface.
 function setupArchive() {
   const scroller = document.querySelector("#archive-scroller");
   if (!scroller) return;
@@ -282,40 +283,55 @@ function setupArchive() {
   const prev = document.querySelector("#archive-prev");
   const next = document.querySelector("#archive-next");
   const count = document.querySelector("#archive-count");
-  const total = scroller.querySelectorAll(".specimen").length;
+  const specimens = Array.from(scroller.querySelectorAll(".specimen"));
+  const total = specimens.length;
+  let activeIndex = 0;
+  let frame = 0;
 
-  function step() {
-    const specimen = scroller.querySelector(".specimen");
-    return specimen ? specimen.getBoundingClientRect().width + 24 : 444;
-  }
-  function visibleIndex() {
-    return Math.min(
-      total - 1,
-      Math.round(scroller.scrollLeft / step())
-    );
-  }
-  function refreshCount() {
+  function setVisualState(index) {
+    activeIndex = Math.max(0, Math.min(total - 1, index));
+    specimens.forEach((specimen, specimenIndex) => {
+      specimen.classList.toggle("is-current", specimenIndex === activeIndex);
+      specimen.classList.toggle("is-before", specimenIndex < activeIndex);
+      specimen.classList.toggle("is-after", specimenIndex > activeIndex);
+    });
     if (count) {
       count.textContent =
-        String(visibleIndex() + 1).padStart(2, "0") +
+        String(activeIndex + 1).padStart(2, "0") +
         " — " +
         String(total).padStart(2, "0") +
         " SPECIMENS";
     }
+    if (prev) prev.disabled = activeIndex === 0;
+    if (next) next.disabled = activeIndex === total - 1;
   }
 
-  if (prev) {
-    prev.addEventListener("click", () => {
-      scroller.scrollBy({ left: -step(), behavior: "smooth" });
-    });
+  function goTo(index) {
+    const nextIndex = Math.max(0, Math.min(total - 1, index));
+    setVisualState(nextIndex);
+    specimens[nextIndex]?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
-  if (next) {
-    next.addEventListener("click", () => {
-      scroller.scrollBy({ left: step(), behavior: "smooth" });
-    });
+
+  function refreshFromScroll() {
+    frame = 0;
+    const marker = window.scrollY + window.innerHeight * 0.28;
+    const index = specimens.reduce(
+      (current, specimen, specimenIndex) =>
+        specimen.offsetTop <= marker ? specimenIndex : current,
+      0,
+    );
+    setVisualState(index);
   }
-  scroller.addEventListener("scroll", refreshCount, { passive: true });
-  refreshCount();
+
+  function scheduleRefresh() {
+    if (frame === 0) frame = requestAnimationFrame(refreshFromScroll);
+  }
+
+  prev?.addEventListener("click", () => goTo(activeIndex - 1));
+  next?.addEventListener("click", () => goTo(activeIndex + 1));
+  window.addEventListener("scroll", scheduleRefresh, { passive: true });
+  window.addEventListener("resize", scheduleRefresh, { passive: true });
+  setVisualState(0);
 }
 
 // Collaboratory: drag/keyboard comparison slider between input and output.

@@ -46,16 +46,19 @@
         <span>board admin</span>
       </a>
       <nav aria-label="Admin navigation">
+        <a href="https://mail.zoho.com/zm/" target="_blank" rel="noopener noreferrer">Open Zoho Webmail</a>
         <a href="/">Public site</a>
       </nav>
     </header>
 
-    <main class="section admin-wrap">
-      <p class="mono-label"><span class="dot"></span>Board administration</p>
-      <h1 style="font-family: var(--font-display); font-weight: 400; font-size: clamp(2.4rem, 6vw, 4rem); letter-spacing: -0.01em; margin: 8px 0 20px;">Board admin.</h1>
-      <p class="admin-status" id="status" role="status" aria-live="polite"></p>
+    <main class="admin-wrap admin-snap-page">
+      <section class="admin-card admin-snap-card admin-intro" aria-labelledby="admin-title">
+        <p class="mono-label"><span class="dot"></span>Board administration</p>
+        <h1 id="admin-title">Board admin.</h1>
+        <p class="admin-status" id="status" role="status" aria-live="polite"></p>
+      </section>
 
-      <section class="admin-card" aria-labelledby="token-title">
+      <section class="admin-card admin-snap-card" aria-labelledby="token-title">
         <h2 id="token-title">Session token</h2>
         <div class="token-row">
           <input type="password" id="token" autocomplete="off" placeholder="admin token" />
@@ -68,7 +71,19 @@
         </p>
       </section>
 
-      <section class="admin-card" aria-labelledby="new-title" hidden id="composer">
+      <section class="admin-card admin-snap-card" aria-labelledby="mail-title" id="mail-card">
+        <div class="admin-card-heading">
+          <div>
+            <p class="mono-label"><span class="dot"></span>Private inbox</p>
+            <h2 id="mail-title">Received mail.</h2>
+          </div>
+          <button class="button quiet" id="mail-refresh" type="button" disabled>Refresh</button>
+        </div>
+        <p class="hint">Messages delivered through the Zoho webhook appear here after the signed endpoint is configured.</p>
+        <div id="mail-list" class="mail-list"><p class="hint">Unlock to view received mail.</p></div>
+      </section>
+
+      <section class="admin-card admin-snap-card" aria-labelledby="new-title" hidden id="composer">
         <h2 id="new-title">New post</h2>
         <form id="post-form">
           <label for="f-title">Title</label>
@@ -89,7 +104,7 @@
         </form>
       </section>
 
-      <section class="admin-card" aria-labelledby="list-title" hidden id="posts-card">
+      <section class="admin-card admin-snap-card" aria-labelledby="list-title" hidden id="posts-card">
         <h2 id="list-title">Posts</h2>
         <div id="posts-list"></div>
       </section>

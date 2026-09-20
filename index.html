@@ -74,11 +74,11 @@
         </nav>
 
         <div class="hero-inner">
-          <p class="eyebrow">Material research&nbsp;&nbsp;/&nbsp;&nbsp;Art foundation</p>
+          <p class="eyebrow hero-eyebrow">Material research&nbsp;&nbsp;/&nbsp;&nbsp;Art foundation</p>
           <h1 class="hero-title" id="hero-title">
-            <span class="hw">Tuning</span>
-            <span class="hw">Into</span>
-            <span class="hw">Matter</span>
+            <span class="hw">TUNING</span>
+            <span class="hw">INTO</span>
+            <span class="hw">MATTER</span>
           </h1>
           <p class="hero-lede">
             A foundation bridging sensor research and artistic practice —
@@ -95,13 +95,13 @@
         </a>
 
         <div class="hero-readouts" aria-hidden="true">
-          <div>DISPATCH · LIVE</div>
-          <div class="lock">COMPUTATIONS · RUNNING</div>
+          <div>LAT 24.5°S · LON 69.3°W</div>
+          <div class="lock">SIGNAL · LOCKED</div>
         </div>
       </section>
 
       <!-- ================================== 02 · the archive of matter -->
-      <section class="section" id="archive" aria-labelledby="archive-title">
+      <section class="section archive-section" id="archive" aria-labelledby="archive-title">
         <div class="section-head">
           <div>
             <p class="eyebrow">02 / The Archive of Matter</p>
@@ -109,19 +109,22 @@
           </div>
           <p class="lede">
             Each specimen is a sensor technology rendered as a fine-art
-            object. Scroll laterally to enter the archive.
+            object. Scroll down to enter the archive.
           </p>
         </div>
 
         <div class="archive-controls">
           <span class="archive-count" id="archive-count">01 — 04 SPECIMENS</span>
-          <div class="archive-nav">
-            <button class="archive-btn" id="archive-prev" type="button" aria-label="Previous specimen">←</button>
-            <button class="archive-btn" id="archive-next" type="button" aria-label="Next specimen">→</button>
-          </div>
+          <span class="archive-scroll-hint">SCROLL TO CONTINUE ↓</span>
         </div>
 
-        <div class="archive-scroller" id="archive-scroller">
+        <div
+          class="archive-scroller"
+          id="archive-scroller"
+          role="region"
+          aria-roledescription="scrolling archive"
+          aria-label="Archive of Matter specimens"
+        >
           <article class="specimen">
             <div class="specimen-frame">
               <img src="assets/specimen-silicon.jpg" alt="Abstract render of a crystalline lattice" loading="lazy" />

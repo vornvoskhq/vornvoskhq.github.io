@@ -20,6 +20,9 @@ const els = {
   previewWrap: document.querySelector("#image-preview-wrap"),
   preview: document.querySelector("#image-preview"),
   previewClear: document.querySelector("#image-clear"),
+  mailCard: document.querySelector("#mail-card"),
+  mailList: document.querySelector("#mail-list"),
+  mailRefresh: document.querySelector("#mail-refresh"),
 };
 
 let token = null;
@@ -55,6 +58,47 @@ async function api(path, options) {
 async function loadPosts() {
   const payload = await api("/admin/posts", { headers: headers() });
   renderPosts(payload.posts);
+}
+
+async function loadMail() {
+  const payload = await api("/admin/mail", { headers: headers() });
+  renderMail(payload.messages || []);
+}
+
+function renderMail(messages) {
+  els.mailList.replaceChildren();
+  if (messages.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "hint";
+    empty.textContent = "No received messages yet.";
+    els.mailList.append(empty);
+    return;
+  }
+
+  for (const message of messages) {
+    const item = document.createElement("article");
+    item.className = "mail-item";
+
+    const meta = document.createElement("p");
+    meta.className = "mail-meta";
+    const timestamp = message.receivedTime || message.createdAt;
+    meta.textContent = new Date(timestamp).toLocaleString();
+
+    const subject = document.createElement("h3");
+    subject.textContent = message.subject || "(no subject)";
+
+    const addresses = document.createElement("p");
+    addresses.className = "mail-addresses";
+    addresses.textContent = "From " + (message.fromAddress || "unknown") +
+      (message.toAddress ? " · To " + message.toAddress : "");
+
+    const body = document.createElement("p");
+    body.className = "mail-body";
+    body.textContent = message.body || "(empty message)";
+
+    item.append(meta, subject, addresses, body);
+    els.mailList.append(item);
+  }
 }
 
 function renderPosts(posts) {
@@ -180,8 +224,11 @@ function unlock() {
   els.token.value = "";
   els.composer.hidden = false;
   els.postsCard.hidden = false;
-  setStatus("Unlocked. Loading posts…", "ok");
-  act(loadPosts);
+  els.mailRefresh.disabled = false;
+  setStatus("Unlocked. Loading posts and mail…", "ok");
+  act(async () => {
+    await Promise.all([loadPosts(), loadMail()]);
+  });
 }
 
 function lock() {
@@ -189,6 +236,12 @@ function lock() {
   sessionStorage.removeItem("oml_admin_token");
   els.composer.hidden = true;
   els.postsCard.hidden = true;
+  els.mailRefresh.disabled = true;
+  els.mailList.replaceChildren();
+  const locked = document.createElement("p");
+  locked.className = "hint";
+  locked.textContent = "Unlock to view received mail.";
+  els.mailList.append(locked);
   els.postsList.replaceChildren();
   clearSelectedImage();
   setStatus("Locked.");
@@ -196,6 +249,7 @@ function lock() {
 
 els.unlock.addEventListener("click", unlock);
 els.lock.addEventListener("click", lock);
+els.mailRefresh.addEventListener("click", () => act(loadMail));
 els.token.addEventListener("keydown", (event) => {
   if (event.key === "Enter") unlock();
 });
@@ -238,6 +292,9 @@ if (saved !== null) {
   token = saved;
   els.composer.hidden = false;
   els.postsCard.hidden = false;
-  setStatus("Session restored. Loading posts…", "ok");
-  act(loadPosts);
+  els.mailRefresh.disabled = false;
+  setStatus("Session restored. Loading posts and mail…", "ok");
+  act(async () => {
+    await Promise.all([loadPosts(), loadMail()]);
+  });
 }
