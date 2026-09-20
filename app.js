@@ -163,6 +163,32 @@ function setupNavigation() {
   });
 }
 
+// Same-page links should land on the panel boundary, not whichever snap point
+// the browser considers nearest while a smooth anchor jump is in progress.
+function setupAnchorNavigation() {
+  const links = document.querySelectorAll("a[href^='#']");
+  if (!links.length) return;
+
+  links.forEach((link) => {
+    link.addEventListener("click", (event) => {
+      const hash = link.getAttribute("href");
+      const target = hash ? document.querySelector(hash) : null;
+      if (!target) return;
+
+      event.preventDefault();
+      const header = document.querySelector(".hero-topbar");
+      const offset = header ? header.getBoundingClientRect().height : 0;
+      const destination = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
+      const duration = prefersReducedMotion ? 0 : 700;
+
+      document.documentElement.classList.add("is-jumping");
+      window.history.replaceState(null, "", hash);
+      window.scrollTo({ top: destination, behavior: duration ? "smooth" : "auto" });
+      window.setTimeout(() => document.documentElement.classList.remove("is-jumping"), duration + 150);
+    });
+  });
+}
+
 // Panel navigation: keep the current major section visible in the fixed navigator.
 function setupPanelNavigation() {
   const links = Array.from(document.querySelectorAll(".panel-nav-link"));
@@ -563,6 +589,7 @@ function setupCursor() {
 
 loadPosts();
 setupNavigation();
+setupAnchorNavigation();
 setupPanelNavigation();
 setupArchive();
 setupSlider();

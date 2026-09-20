@@ -34,6 +34,7 @@ html {
   scroll-snap-type: y mandatory;
   scroll-padding-top: 84px;
 }
+html.is-jumping { scroll-snap-type: none !important; }
 body {
   margin: 0;
   background: var(--bg);
