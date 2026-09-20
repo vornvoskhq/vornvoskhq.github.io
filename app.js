@@ -138,6 +138,37 @@ function setupNavigation() {
   });
 }
 
+// Panel navigation: keep the current major section visible in the fixed navigator.
+function setupPanelNavigation() {
+  const links = Array.from(document.querySelectorAll(".panel-nav-link"));
+  if (!links.length || !("IntersectionObserver" in window)) return;
+
+  const sections = links
+    .map((link) => document.querySelector(link.getAttribute("href")))
+    .filter(Boolean);
+
+  const setActive = (section) => {
+    links.forEach((link) => {
+      const active = link.getAttribute("href") === "#" + section.id;
+      link.classList.toggle("is-active", active);
+      if (active) link.setAttribute("aria-current", "true");
+      else link.removeAttribute("aria-current");
+    });
+  };
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+      if (visible[0]) setActive(visible[0].target);
+    },
+    { rootMargin: "-20% 0px -65% 0px", threshold: [0, 0.1, 0.25, 0.5] }
+  );
+
+  sections.forEach((section) => observer.observe(section));
+}
+
 // Archive of Matter: horizontal specimen scroller with prev/next controls
 // and a 01—0N counter, matching the reference's gallery behavior.
 function setupArchive() {
@@ -458,6 +489,7 @@ function setupCursor() {
 
 loadPosts();
 setupNavigation();
+setupPanelNavigation();
 setupArchive();
 setupSlider();
 setupScrollFrequency();
