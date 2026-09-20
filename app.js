@@ -114,12 +114,20 @@ function setupNavigation() {
   const toggle = document.querySelector("#nav-toggle");
   const mobileNav = document.querySelector("#nav-mobile");
   if (!toggle || !mobileNav) return;
+  const mobileLinks = Array.from(mobileNav.querySelectorAll("a"));
+  let returnFocus = toggle;
 
   function setOpen(open) {
     toggle.setAttribute("aria-expanded", String(open));
     mobileNav.setAttribute("aria-hidden", String(!open));
     mobileNav.inert = !open;
     document.body.style.overflow = open ? "hidden" : "";
+    if (open) {
+      returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : toggle;
+      mobileLinks[0]?.focus();
+    } else if (returnFocus instanceof HTMLElement) {
+      returnFocus.focus();
+    }
   }
 
   setOpen(false);
@@ -129,12 +137,29 @@ function setupNavigation() {
     setOpen(!open);
   });
 
-  mobileNav.querySelectorAll("a").forEach((link) => {
+  mobileLinks.forEach((link) => {
     link.addEventListener("click", () => setOpen(false));
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") setOpen(false);
+    const open = toggle.getAttribute("aria-expanded") === "true";
+    if (!open) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setOpen(false);
+      return;
+    }
+    if (event.key === "Tab" && mobileLinks.length) {
+      const first = mobileLinks[0];
+      const last = mobileLinks[mobileLinks.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
   });
 }
 
@@ -162,6 +187,29 @@ function setupPanelNavigation() {
     sections[nextIndex].scrollIntoView({ behavior: "smooth", block: "start" });
     setActive(sections[nextIndex]);
   };
+
+  let activeIndex = 0;
+  let scheduled = false;
+  const updateFromScroll = () => {
+    scheduled = false;
+    const marker = window.scrollY + window.innerHeight * 0.35;
+    let closest = 0;
+    sections.forEach((section, index) => {
+      if (section.offsetTop <= marker) closest = index;
+    });
+    if (closest !== activeIndex) {
+      activeIndex = closest;
+      setActive(sections[closest]);
+    }
+  };
+  const scheduleScrollUpdate = () => {
+    if (scheduled) return;
+    scheduled = true;
+    window.requestAnimationFrame(updateFromScroll);
+  };
+  window.addEventListener("scroll", scheduleScrollUpdate, { passive: true });
+  window.addEventListener("resize", scheduleScrollUpdate, { passive: true });
+  updateFromScroll();
 
   document.addEventListener("keydown", (event) => {
     if (!["ArrowDown", "ArrowUp", "PageDown", "PageUp"].includes(event.key)) return;
