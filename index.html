@@ -1,592 +1,794 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Open Matter Labs publishes reproducible materials research and open data for public benefit." />
-    <meta name="theme-color" content="#09090c" />
-    <meta property="og:title" content="Open Matter Labs" />
-    <meta property="og:description" content="Reproducible materials research, open data, and public-interest work." />
-    <meta property="og:url" content="https://openmatterlabs.org/" />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary" />
-    <title>Open Matter Labs — Material research & art foundation</title>
-    <link rel="canonical" href="https://openmatterlabs.org/" />
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap"
-    />
-    <link rel="stylesheet" href="styles.css?v=viewport-cards-20260920" />
-  </head>
-  <body>
-    <div class="field-grid" id="field-grid" aria-hidden="true"></div>
-    <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
-    <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
-    <div class="cursor-readout" id="cursor-readout" aria-hidden="true">432Hz</div>
-    <div class="scroll-frequency" id="scroll-frequency" aria-hidden="true">
-      <div><strong>432 Hz</strong><span>LAYER 01/07</span></div>
-      <i><b></b></i>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>Open Matter Labs — Material research & art foundation</title>
+  <meta name="description" content="Open Matter Labs publishes reproducible materials research and open data for public benefit." />
+  <meta name="theme-color" content="#08080A" />
+  <meta property="og:title" content="Open Matter Labs" />
+  <meta property="og:description" content="Reproducible materials research, open data, and public-interest work." />
+  <meta property="og:url" content="https://openmatterlabs.org/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="canonical" href="https://openmatterlabs.org/" />
+  <style>html { background: #08080A; }</style>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      color-scheme: dark;
+      --background: #08080A;
+      --foreground: #F2F2F2;
+      --signal: var(--steel); /* accent system unified to steel blue */
+      --subdata: #ABABB2;
+      --steel: #5E8BB8;
+      --border: #202023;
+      --card: #0E0E11;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --display: 'Instrument Serif', ui-serif, Georgia, serif;
+    }
+
+    body {
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- sticky stacking sections ---- */
+    section {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ---- scroll leeway: hangs on card 2 before card 3 arrives ---- */
+    .scroll-leeway { height: 50vh; }
+
+    /* ============ CARD 1 — HERO ============ */
+    .hero {
+      background: var(--background);
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero .backdrop { position: absolute; inset: 0; }
+
+    .hero .backdrop img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.3;
+      animation: crystallize 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* scrim + scanlines on ::after so they paint ABOVE the image and
+       temper the crystallize bloom (was ::before = under img = flash) */
+    .hero .backdrop::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0px, transparent 3px,
+          rgba(242, 242, 242, 0.015) 3px, rgba(242, 242, 242, 0.015) 4px
+        ),
+        linear-gradient(to bottom, rgba(8,8,10,0.66), rgba(8,8,10,0.46) 50%, #08080A);
+    }
+
+    /* grain overlay */
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      pointer-events: none;
+      opacity: 0.04;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* monotonic fade: never exceeds the settled state, so there is no
+       bright→dark jump mid-animation (the old 60% overshoot caused it) */
+    @keyframes crystallize {
+      0%   { filter: blur(24px) brightness(0.4); opacity: 0; transform: scale(1.08); }
+      100% { filter: blur(0) brightness(1); opacity: 0.3; transform: scale(1); }
+    }
+
+    /* ---- centered 2-cell table ---- */
+    .hero-table {
+      position: relative;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      max-width: 1200px;
+      width: 100%;
+      padding: 0 2rem;
+      align-items: center;
+    }
+
+    .hero-kicker {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.4em;
+      color: var(--signal);
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    /* text animations only start once webfonts are ready (body.fonts-ready
+       is added by JS) — prevents visible font-swap flashes during entrance */
+    body.fonts-ready .hero.in-view .hero-kicker {
+      animation: fade-up 1s ease 0.1s forwards;
+    }
+
+    @keyframes fade-up { to { opacity: 1; transform: translateY(0); } }
+
+    .hero-title {
+      font-family: var(--display);
+      font-weight: 400;
+      font-size: clamp(3.5rem, 9.5vw, 9.5rem);
+      line-height: 0.92;
+      letter-spacing: -0.025em;
+      text-transform: uppercase;
+    }
+
+    .hero-title span {
+      display: block;
+      opacity: 0;
+      transform: translateY(40px);
+      filter: blur(12px);
+    }
+
+    /* plays whenever .in-view is (re-)applied by the scroll watcher */
+    body.fonts-ready .hero.in-view .hero-title span {
+      animation: rise-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    body.fonts-ready .hero.in-view .hero-title span:nth-child(1) { animation-delay: 0.25s; }
+    body.fonts-ready .hero.in-view .hero-title span:nth-child(2) { animation-delay: 0.43s; }
+    body.fonts-ready .hero.in-view .hero-title span:nth-child(3) { animation-delay: 0.61s; }
+
+    @keyframes rise-in {
+      to { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+
+    .hero-side { justify-self: start; max-width: 34rem; }
+
+    /* loads immediately — no fade animation */
+    .labs-header {
+      font-family: var(--display);
+      font-weight: 400;
+      font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+      line-height: 1.05;
+      color: var(--steel);
+      margin-bottom: 1rem;
+    }
+    .labs-header em { font-style: italic; }
+
+    /* hidden until webfonts load, then fades in — no visible font swap */
+    .labs-header {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    body.fonts-ready .labs-header { opacity: 1; }
+
+    .hero-sub {
+      color: var(--subdata);
+      font-weight: 300;
+      font-size: 1.125rem;
+      line-height: 1.625;
+      max-width: 34rem;
+      opacity: 0;
+      justify-self: start;
+    }
+
+    body.fonts-ready .hero.in-view .hero-sub {
+      animation: fade-in 1s ease 1.05s forwards;
+    }
+
+    @keyframes fade-in { to { opacity: 1; } }
+
+    @media (max-width: 768px) {
+      .hero-table { grid-template-columns: 1fr; gap: 2rem; }
+    }
+
+    /* ============ CARD 2 — ARCHIVE OF MATTER ============ */
+    .archive {
+      background: #101014;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.25rem;
+      padding: clamp(1.5rem, 4vh, 3rem) clamp(1.5rem, 4vw, 3rem);
+    }
+
+    .archive .section-title { font-size: clamp(2rem, 4.5vw, 3.5rem); }
+
+    .archive-header {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      align-items: end;
+      gap: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-family: var(--display);
+      font-weight: 400;
+      font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+      line-height: 0.95;
+    }
+
+    .section-title em { color: var(--signal); }
+
+    .section-desc {
+      color: var(--subdata);
+      font-size: 0.95rem;
+      line-height: 1.625;
+      max-width: 26rem;
+    }
+
+    /* overlay arrows on the carousel */
+    .gallery-wrap {
+      flex: 1 1 0;
+      min-height: 0;
+      position: relative;
+      display: flex;
+    }
+
+    .gal-arrow {
+      position: absolute;
+      top: calc(50% - 2.5rem);
+      transform: translateY(-50%);
+      z-index: 5;
+      width: 2.25rem; height: 2.25rem;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      border: 1px solid rgba(94, 139, 184, 0.3);
+      background: rgba(8, 8, 10, 0.5);
+      backdrop-filter: blur(3px);
+      color: rgba(242, 242, 242, 0.7);
+      font-size: 0.85rem;
+      opacity: 0.5;
+      cursor: pointer;
+      transition: opacity 0.3s, background 0.3s, color 0.3s, border-color 0.3s;
+    }
+    .gal-arrow:hover {
+      opacity: 1;
+      background: rgba(8, 8, 10, 0.8);
+      color: var(--signal);
+      border-color: var(--signal);
+    }
+    .gal-prev { left: 1rem; }
+    .gal-next { right: 1rem; }
+
+    /* horizontal gallery — flush at both ends: no side padding, snap to
+       start. Frames flex to leftover height; JS pins each caption's width
+       to its frame so text can't overhang the image */
+    .gallery {
+      flex: 1 1 0;
+      min-height: 0;
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      padding: 0.25rem 0 0.5rem;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .gallery::-webkit-scrollbar { display: none; }
+
+    .specimen {
+      flex-shrink: 0;
+      width: max-content;
+      max-width: min(31vw, 380px);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      scroll-snap-align: start;
+    }
+
+    @media (max-width: 640px) {
+      .archive-header { grid-template-columns: 1fr; }
+      .gal-arrow { width: 2.25rem; height: 2.25rem; }
+    }
+
+    .specimen-frame {
+      position: relative;
+      flex: 1 1 0;
+      min-height: 0;
+      max-width: min(32vw, 380px); /* safety cap on very tall windows */
+      aspect-ratio: 3 / 4; /* width derives from flexed height */
+      overflow: hidden;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+
+    .specimen-frame img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.7s ease-out;
+    }
+    .specimen:hover .specimen-frame img { transform: scale(1.05); }
+
+    .specimen-shade {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, #08080A, rgba(8,8,10,0.1) 50%, transparent);
+      opacity: 0.8;
+    }
+
+    .specimen-id, .specimen-disc {
+      position: absolute; top: 1rem;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+    }
+    .specimen-id {
+      left: 1rem;
+      background: var(--steel);
+      color: #FFFFFF;
+      font-weight: 700;
+      padding: 0.3rem 0.5rem;
+    }
+    .specimen-disc { right: 1rem; color: #C9C9CF; font-weight: 700; }
+
+    .specimen-data {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      padding: 1.25rem;
+      transform: translateY(8px);
+      opacity: 0;
+      transition: all 0.5s;
+    }
+    .specimen:hover .specimen-data {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .specimen-data-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      border-top: 1px solid rgba(94, 139, 184, 0.35);
+      padding-top: 0.75rem;
+    }
+
+    .specimen-data-grid span {
+      display: block;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--subdata);
+    }
+    .specimen-data-grid strong {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--foreground);
+      margin-top: 2px;
+    }
+
+    .specimen-caption {
+      margin-top: 0.85rem;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .specimen-caption h3 {
+      font-family: var(--display);
+      font-weight: 400;
+      font-size: 1.25rem;
+    }
+
+    .specimen-caption .num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--subdata);
+    }
+
+    .specimen-summary {
+      margin-top: 0.4rem;
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      color: var(--subdata);
+      max-width: 28rem;
+    }
+
+    /* ============ CARD 3 — COLLABORATORY (placeholder) ============ */
+    .collab {
+      background: #08080A;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.25rem;
+      padding: clamp(1.5rem, 4vh, 3rem) clamp(1.5rem, 4vw, 3rem);
+    }
+
+    .collab .section-title { font-size: clamp(2rem, 4.5vw, 3.5rem); }
+
+    .collab-header {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      align-items: end;
+      gap: 1.5rem;
+    }
+
+    .collab-grid {
+      flex: 1 1 0;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+      align-content: start;
+    }
+
+    .contrib { border-top: 1px solid var(--border); padding-top: 1.25rem; }
+    .contrib-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--signal);
+      margin-bottom: 0.75rem;
+    }
+    .contrib-title {
+      font-family: var(--display);
+      font-weight: 400;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .contrib-pair {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--subdata);
+      margin-bottom: 0.75rem;
+    }
+    .contrib-desc {
+      font-size: 0.875rem;
+      line-height: 1.625;
+      color: var(--subdata);
+    }
+
+    /* contact + payment tiers row (mirrors contrib styling) */
+    .collab-bottom {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr 1fr;
+      gap: 2.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .collab-bottom > div {
+      display: flex;
+      gap: 1.25rem;
+      align-items: baseline;
+    }
+
+    .cell-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--signal);
+      flex-shrink: 0;
+    }
+
+    .cell-body { display: flex; flex-direction: column; min-width: 0; }
+    .cell-title {
+      font-family: var(--display);
+      font-weight: 400;
+      font-size: 1.25rem;
+      color: var(--foreground);
+    }
+    .cell-mail {
+      font-size: 1.05rem;
+      color: var(--foreground);
+      text-decoration: none;
+      border-bottom: 1px solid var(--steel);
+      padding-bottom: 2px;
+      transition: color 0.3s, border-color 0.3s;
+    }
+    .cell-mail:hover { color: var(--steel); }
+    .cell-sub {
+      margin-top: 0.4rem;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--subdata);
+    }
+
+    @media (max-width: 800px) {
+      .collab-header, .collab-grid { grid-template-columns: 1fr; }
+      .collab-bottom { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- CARD 1 -->
+  <section class="hero in-view">
+    <div class="backdrop">
+      <img src="/assets/hero.jpg" alt="">
     </div>
 
-    <main>
-      <!-- ================================================== hero -->
-      <section class="hero" id="top" aria-labelledby="hero-title">
-        <div class="hero-media" aria-hidden="true">
-          <img src="assets/hero.jpg" alt="" loading="eager" />
-          <div class="scanline"></div>
-        </div>
-        <canvas class="hero-particles" id="hero-particles"></canvas>
-
-        <div class="hero-topbar">
-          <a class="topbar-brand" href="#top">
-            <span class="topbar-dot" aria-hidden="true"></span>
-            OPEN MATTER
-          </a>
-          <nav class="desktop-nav" aria-label="Primary navigation">
-            <a href="#archive">Archive</a>
-            <a href="#collaboratory">Collaboratory</a>
-            <a href="#dispatch">Dispatch</a>
-            <a href="#reading">Reading</a>
-            <a href="#convergence">Convergence</a>
-            <a href="#ledger">Ledger</a>
-            <a href="#contact">Contact</a>
-          </nav>
-          <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-mobile">
-            <span class="nav-toggle-bar"></span>
-            <span class="nav-toggle-bar"></span>
-          </button>
-          <span class="topbar-est">EST. MMXXVI</span>
-        </div>
-
-        <nav class="nav-mobile" id="nav-mobile" aria-label="Mobile navigation" aria-hidden="true">
-          <div class="nav-mobile-inner">
-            <a href="#archive">Archive</a>
-            <a href="#collaboratory">Collaboratory</a>
-            <a href="#dispatch">Dispatch</a>
-            <a href="#reading">Reading</a>
-            <a href="#convergence">Convergence</a>
-            <a href="#ledger">Ledger</a>
-            <a href="#contact">Contact</a>
-          </div>
-        </nav>
-
-        <div class="hero-inner">
-          <p class="eyebrow hero-eyebrow">Material research&nbsp;&nbsp;/&nbsp;&nbsp;Art foundation</p>
-          <h1 class="hero-title" id="hero-title">
-            <span class="hw">TUNING</span>
-            <span class="hw">INTO</span>
-            <span class="hw">MATTER</span>
-          </h1>
-          <p class="hero-lede">
-            A foundation bridging sensor research and artistic practice —
-            making the invisible signals of matter tangible, collectible,
-            and humane.
-          </p>
-        </div>
-
-        <a class="hero-node" href="#archive" data-cursor="hover">
-          <span class="node-orb" aria-hidden="true">
-            <span class="node-ping"></span>
-          </span>
-          <span class="node-text">Explore the research</span>
-        </a>
-
-        <div class="hero-readouts" aria-hidden="true">
-          <div>LAT 24.5°S · LON 69.3°W</div>
-          <div class="lock">SIGNAL · LOCKED</div>
-        </div>
-      </section>
-
-      <!-- ================================== 02 · the archive of matter -->
-      <section class="section archive-section" id="archive" aria-labelledby="archive-title">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">02 / The Archive of Matter</p>
-            <h2 id="archive-title">Research as <em>collectible</em> form.</h2>
-          </div>
-          <p class="lede">
-            Each specimen is a sensor technology rendered as a fine-art
-            object. Scroll down to enter the archive.
-          </p>
-        </div>
-
-        <div class="archive-controls">
-          <span class="archive-count" id="archive-count">01 — 04 SPECIMENS</span>
-          <span class="archive-scroll-hint">SCROLL TO CONTINUE ↓</span>
-        </div>
-
-        <div
-          class="archive-scroller"
-          id="archive-scroller"
-          role="region"
-          aria-roledescription="scrolling archive"
-          aria-label="Archive of Matter specimens"
-        >
-          <article class="specimen">
-            <div class="specimen-frame">
-              <img src="assets/specimen-silicon.jpg" alt="Abstract render of a crystalline lattice" loading="lazy" />
-              <p class="specimen-id">SIL-01</p>
-              <p class="specimen-disc">Semiconductor</p>
-              <div class="specimen-body">
-                <h3>Silicon Lattice</h3>
-                <p>Etched microstructures that translate thermal gradients into readable electrical signal.</p>
-                <div class="specimen-metrics">
-                  <div><span>Substrate</span><span>Si ⟨100⟩</span></div>
-                  <div><span>Resolution</span><span>0.4 µm</span></div>
-                  <div><span>Sensitivity</span><span>18 µV/K</span></div>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="specimen">
-            <div class="specimen-frame">
-              <img src="assets/specimen-dendritic.jpg" alt="Abstract render of dendritic crystal growth" loading="lazy" />
-              <p class="specimen-id">CRY-02</p>
-              <p class="specimen-disc">Mineralogy</p>
-              <div class="specimen-body">
-                <h3>Dendritic Growth</h3>
-                <p>Self-organising crystal branches that map acoustic vibration into visible form.</p>
-                <div class="specimen-metrics">
-                  <div><span>Growth rate</span><span>0.2 nm/s</span></div>
-                  <div><span>Frequency</span><span>40–800 Hz</span></div>
-                  <div><span>Yield</span><span>73%</span></div>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="specimen">
-            <div class="specimen-frame">
-              <img src="assets/specimen-glass.jpg" alt="Abstract render of refractive glass forms" loading="lazy" />
-              <p class="specimen-id">GLS-03</p>
-              <p class="specimen-disc">Optics</p>
-              <div class="specimen-body">
-                <h3>Refractive Glass</h3>
-                <p>Smart-glass composites splitting a single beam into a calibrated spectral signature.</p>
-                <div class="specimen-metrics">
-                  <div><span>Bands</span><span>380–780 nm</span></div>
-                  <div><span>Index</span><span>1.52</span></div>
-                  <div><span>Latency</span><span>2.1 ms</span></div>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="specimen">
-            <div class="specimen-frame">
-              <img src="assets/collab-output.jpg" alt="Abstract render of a carbon weave" loading="lazy" />
-              <p class="specimen-id">CRB-04</p>
-              <p class="specimen-disc">Structural</p>
-              <div class="specimen-body">
-                <h3>Carbon Weave</h3>
-                <p>Micro-filament weave sensing strain and torsion across architectural surfaces.</p>
-                <div class="specimen-metrics">
-                  <div><span>Tensile</span><span>4.1 GPa</span></div>
-                  <div><span>Gauge</span><span>120 Ω</span></div>
-                  <div><span>Fatigue</span><span>10⁶ cyc</span></div>
-                </div>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <!-- ===================================== 03 · the collaboratory -->
-      <section class="section" id="collaboratory" aria-labelledby="collab-title">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">03 / The Collaboratory</p>
-            <h2 id="collab-title">From <em>signal</em> to substance.</h2>
-          </div>
-          <p class="lede">
-            Our residencies pair a scientist and an artist around one
-            material. Drag the divider to watch raw data resolve into work.
-          </p>
-        </div>
-
-        <div
-          class="slider"
-          id="collab-slider"
-          role="slider"
-          tabindex="0"
-          aria-label="Comparison between computed input and rendered output"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          aria-valuenow="50"
-        >
-          <img src="assets/collab-output.jpg" alt="Rendered output — artistic form" loading="lazy" />
-          <div class="slider-top">
-            <img src="assets/collab-input.jpg" alt="Computed input — raw field" loading="lazy" />
-          </div>
-          <div class="slider-handle" aria-hidden="true"></div>
-          <p class="slider-tag">INPUT · SCIENCE</p>
-          <p class="slider-tag right">OUTPUT · ART</p>
-          <p class="slider-tag center">DRAG TO REVEAL</p>
-        </div>          <p class="slider-caption">Demonstration pair — a computed field resolving into rendered form.</p>
-        <div class="residency-meta">
-          <article><p>RESIDENCY 01</p><h3>Bismuth Acoustics</h3><strong>Dr. L. Okafor × M. Sørensen</strong><span>Mapping crystal vibrations into a sound installation.</span></article>
-          <article><p>RESIDENCY 02</p><h3>Atacama Tension</h3><strong>Dr. R. Vega × A. Hoshino</strong><span>Strain sensors across desert salt flats become a light field.</span></article>
-          <article><p>RESIDENCY 03</p><h3>Glass Refractions</h3><strong>Dr. N. Bauer × K. Adeyemi</strong><span>Spectral glass studies rendered as a walk-through prism.</span></article>
-        </div>
-      </section>
-
-      <!-- ============================================= 04 · dispatch -->
-      <section class="section" id="dispatch" aria-labelledby="dispatch-title">
-        <div class="section-head board-heading">
-          <div>
-            <p class="eyebrow">04 / Dispatch</p>
-            <h2 id="dispatch-title">Field <em>notes</em> &amp; dispatches.</h2>
-          </div>
-          <div>
-            <p class="lede">
-              Installation news from our collaborators, and reading on
-              materials research and human-centered communities.
-            </p>
-            <p class="board-status"><span class="status-dot"></span>Live</p>
-          </div>
-        </div>
-        <div id="noticeboard" class="noticeboard" aria-live="polite"></div>
-        <p class="board-note">
-          Public posting and moderated comments are in preparation; there is no
-          public submission form. Updates are published by the lab.
+    <div class="hero-table">
+      <div>
+        <p class="hero-kicker">MATERIAL RESEARCH &nbsp;/&nbsp; ART FOUNDATION</p>
+        <h1 class="hero-title">
+          <span>Tuning</span>
+          <span>Into</span>
+          <span>Matter</span>
+        </h1>
+      </div>
+      <div class="hero-side">
+        <h2 class="labs-header">Open Matter <em>Labs</em></h2>
+        <p class="hero-sub">
+          A foundation bridging sensor research and artistic practice —
+          making the invisible signals of matter tangible, collectible,
+          and humane.
         </p>
+      </div>
+    </div>
+  </section>
 
-        <div class="dispatch-grid" aria-label="Reference dispatches and reading links">
-          <div>
-            <p class="col-label"><span class="dot"></span>Installation dispatch</p>
-            <div class="dispatch-list">
-              <a class="dispatch-row" href="https://www.e-flux.com/announcements/" target="_blank" rel="noopener noreferrer">
-                <span><h3>A Listening Field, Atacama</h3><span class="dispatch-via">VIA E-FLUX · 09.2026</span></span>
-                <span class="dispatch-arrow" aria-hidden="true">↗</span>
-              </a>
-              <a class="dispatch-row" href="https://www.artforum.com/news/" target="_blank" rel="noopener noreferrer">
-                <span><h3>Glass Refractions, Tokyo</h3><span class="dispatch-via">VIA ARTFORUM · 08.2026</span></span>
-                <span class="dispatch-arrow" aria-hidden="true">↗</span>
-              </a>
-              <a class="dispatch-row" href="https://www.frieze.com/" target="_blank" rel="noopener noreferrer">
-                <span><h3>Bismuth Acoustics, Zürich</h3><span class="dispatch-via">VIA FRIEZE · 07.2026</span></span>
-                <span class="dispatch-arrow" aria-hidden="true">↗</span>
-              </a>
-            </div>
-          </div>
-          <div>
-            <p class="col-label"><span class="dot"></span>Reading room</p>
-            <div class="dispatch-list">
-              <a class="dispatch-row" href="https://arxiv.org/list/cond-mat/recent" target="_blank" rel="noopener noreferrer">
-                <span><h3>Phonon DOS of oxide lattices</h3><span class="dispatch-via">VIA ARXIV · COND-MAT · 09.2026</span></span>
-                <span class="dispatch-arrow" aria-hidden="true">↗</span>
-              </a>
-              <a class="dispatch-row" href="https://sigchi.org/" target="_blank" rel="noopener noreferrer">
-                <span><h3>Sensors for human-centered communities</h3><span class="dispatch-via">VIA ACM SIGCHI · 08.2026</span></span>
-                <span class="dispatch-arrow" aria-hidden="true">↗</span>
-              </a>
-              <a class="dispatch-row" href="https://www.nature.com/naturematerials/" target="_blank" rel="noopener noreferrer">
-                <span><h3>Adaptive materials &amp; care</h3><span class="dispatch-via">VIA NATURE MATERIALS · 07.2026</span></span>
-                <span class="dispatch-arrow" aria-hidden="true">↗</span>
-              </a>
+  <!-- CARD 2 — ARCHIVE OF MATTER -->
+  <section class="archive" id="archive">
+    <div class="archive-header">
+      <div>
+        <h2 class="section-title">Research as <em>collectible</em> form.</h2>
+      </div>
+      <p class="section-desc">
+        Each specimen is a sensor technology rendered as a fine-art
+        object. Scroll laterally to enter the archive.
+      </p>
+    </div>
+
+    <div class="gallery-wrap">
+      <div class="gallery" id="gallery">
+      <article class="specimen">
+        <div class="specimen-frame">
+          <img src="/assets/silicon-lattice.jpg" alt="Silicon Lattice">
+          <div class="specimen-shade"></div>
+          <div class="specimen-id">SIL-01</div>
+          <div class="specimen-disc">SEMICONDUCTOR</div>
+          <div class="specimen-data">
+            <div class="specimen-data-grid">
+              <div><span>SUBSTRATE</span><strong>Si &#10216;100&#10217;</strong></div>
+              <div><span>RESOLUTION</span><strong>0.4 &micro;m</strong></div>
+              <div><span>SENSITIVITY</span><strong>18 &micro;V/K</strong></div>
             </div>
           </div>
         </div>
-      </section>
-
-      <!-- ========================================= 05 · reading room -->
-      <section class="section readings-section" id="reading" aria-labelledby="reading-title">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">05 / Reading Room</p>
-            <h2 id="reading-title">Recent <em>material research</em></h2>
-          </div>
-          <p class="lede">
-            Peer-reviewed work from international institutions, indexed for the
-            Open Matter archive.
-          </p>
+        <div class="specimen-caption">
+          <h3>Silicon Lattice</h3>
+          <span class="num">01</span>
         </div>
+        <p class="specimen-summary">Etched microstructures that translate thermal gradients into readable electrical signal.</p>
+      </article>
 
-        <ul class="readings-list">
-          <li><a class="reading-row" href="https://doi.org/10.1038/s41586-025-08628-5" target="_blank" rel="noopener noreferrer">
-            <span class="reading-num">01</span>
-            <div>
-              <h3>A generative model for inorganic materials design</h3>
-              <p class="reading-sum">A diffusion model that proposes millions of novel stable crystal structures, vastly expanding the catalogue of synthesizable inorganic materials.</p>
-              <p class="reading-meta">Zeni et al. · Google DeepMind · Nature · 2025</p>
+      <article class="specimen">
+        <div class="specimen-frame">
+          <img src="/assets/dendritic-growth.jpg" alt="Dendritic Growth">
+          <div class="specimen-shade"></div>
+          <div class="specimen-id">CRY-02</div>
+          <div class="specimen-disc">MINERALOGY</div>
+          <div class="specimen-data">
+            <div class="specimen-data-grid">
+              <div><span>GROWTH RATE</span><strong>0.2 nm/s</strong></div>
+              <div><span>FREQUENCY</span><strong>40&ndash;800 Hz</strong></div>
+              <div><span>YIELD</span><strong>73%</strong></div>
             </div>
-            <span class="reading-arrow" aria-hidden="true">↗</span>
-          </a></li>
-          <li><a class="reading-row" href="https://doi.org/10.1038/s41586-023-06735-9" target="_blank" rel="noopener noreferrer">
-            <span class="reading-num">02</span>
-            <div>
-              <h3>Scaling deep learning for materials discovery</h3>
-              <p class="reading-sum">DeepMind's GNoME model predicts 2.2 million new crystals, including 380,000 stable materials poised for experimental synthesis.</p>
-              <p class="reading-meta">Merchant et al. · Google DeepMind · Nature · 2023</p>
-            </div>
-            <span class="reading-arrow" aria-hidden="true">↗</span>
-          </a></li>
-          <li><a class="reading-row" href="https://doi.org/10.1063/5.0297006" target="_blank" rel="noopener noreferrer">
-            <span class="reading-num">03</span>
-            <div>
-              <h3>A foundation model for atomistic materials chemistry (MACE)</h3>
-              <p class="reading-sum">A message-passing neural network that achieves chemically accurate interatomic potentials across the periodic table at low computational cost.</p>
-              <p class="reading-meta">Batatia et al. · University of Cambridge · J. Chem. Phys. · 2025</p>
-            </div>
-            <span class="reading-arrow" aria-hidden="true">↗</span>
-          </a></li>
-          <li><a class="reading-row" href="https://www.nature.com/articles/s42256-026-01214-y" target="_blank" rel="noopener noreferrer">
-            <span class="reading-num">04</span>
-            <div>
-              <h3>MatterChat: a multimodal large language model for materials science</h3>
-              <p class="reading-sum">An LLM that reasons over crystal structures, predicting properties and proposing synthesis routes from natural-language queries.</p>
-              <p class="reading-meta">Tang et al. · Multi-institution · Nature Comp. Sci. · 2026</p>
-            </div>
-            <span class="reading-arrow" aria-hidden="true">↗</span>
-          </a></li>
-          <li><a class="reading-row" href="https://arxiv.org/abs/2609.20639" target="_blank" rel="noopener noreferrer">
-            <span class="reading-num">05</span>
-            <div>
-              <h3>First-principles theory of phonon renormalization from nonlinear electron-phonon interactions</h3>
-              <p class="reading-sum">A new ab-initio framework for how electrons reshape lattice vibrations — relevant to phonon densities of states in oxide lattices.</p>
-              <p class="reading-meta">Kluibenschedl et al. · University of Vienna · arXiv · 2026</p>
-            </div>
-            <span class="reading-arrow" aria-hidden="true">↗</span>
-          </a></li>
-          <li><a class="reading-row" href="https://arxiv.org/abs/2609.20486" target="_blank" rel="noopener noreferrer">
-            <span class="reading-num">06</span>
-            <div>
-              <h3>Strain-induced metal-to-insulator transition in antiferromagnetic SrCrO₃ thin films</h3>
-              <p class="reading-sum">Epitaxial strain toggles the electronic phase of a correlated oxide — a model for tunable quantum-material substrates.</p>
-              <p class="reading-meta">Jöhr et al. · Paul Scherrer Institute · arXiv · 2026</p>
-            </div>
-            <span class="reading-arrow" aria-hidden="true">↗</span>
-          </a></li>
-        </ul>
-      </section>
-
-      <!-- ========================================= 06 · convergence -->
-      <section class="section convergence-section" id="convergence" aria-labelledby="convergence-title">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">06 / Convergence</p>
-            <h2 id="convergence-title">Where <em>art</em> meets matter</h2>
-          </div>
-          <p class="lede">
-            Artists and institutions experimenting with media, metals, and
-            materials — the collaborative community Open Matter is built for.
-          </p>
-        </div>
-
-        <div class="convergence-grid">
-          <a class="convergence-cell" href="https://www.olafureliasson.net/" target="_blank" rel="noopener noreferrer">
-            <h3>Olafur Eliasson</h3>
-            <p class="convergence-medium">Ice, light, chromatic perception</p>
-            <p class="convergence-note">Glacial ice casts and spectral installations that make material change visible to the body.</p>
-            <p class="convergence-loc">Studio Olafur Eliasson · Berlin</p>
-          </a>
-          <a class="convergence-cell" href="https://studiotomassaraceno.org/" target="_blank" rel="noopener noreferrer">
-            <h3>Tomás Saraceno</h3>
-            <p class="convergence-medium">Aerospace fabrics, spider silk</p>
-            <p class="convergence-note">Lighter-than-air sculptures and woven spider-web architectures that listen to nonhuman matter.</p>
-            <p class="convergence-loc">Studio Tomás Saraceno · Berlin</p>
-          </a>
-          <a class="convergence-cell" href="https://www.dezeen.com/tag/neri-oxman/" target="_blank" rel="noopener noreferrer">
-            <h3>Neri Oxman</h3>
-            <p class="convergence-medium">3D-printed chitin, material ecology</p>
-            <p class="convergence-note">Computational design that grows biological materials — chitin, cellulose — into structural form.</p>
-            <p class="convergence-loc">Mediated Matter · MIT</p>
-          </a>
-          <a class="convergence-cell" href="https://smartmuseum.uchicago.edu/exhibitions/the-allure-of-matter-material-art-from-china/" target="_blank" rel="noopener noreferrer">
-            <h3>The Allure of Matter</h3>
-            <p class="convergence-medium">Material art from China</p>
-            <p class="convergence-note">Decades of artists transforming everyday matter — plastic, ash, hair — into large-scale work.</p>
-            <p class="convergence-loc">Smart Museum · University of Chicago</p>
-          </a>
-          <a class="convergence-cell" href="https://www.craftcontemporary.org/exhibitions/materialacts/" target="_blank" rel="noopener noreferrer">
-            <h3>Material Acts</h3>
-            <p class="convergence-medium">Architecture &amp; design experimentation</p>
-            <p class="convergence-note">Design practices that mobilize, confound, and generate natures through matter.</p>
-            <p class="convergence-loc">Craft Contemporary · Los Angeles</p>
-          </a>
-          <a class="convergence-cell" href="https://mrs.groups.stanford.edu/art-science/art-science-2024" target="_blank" rel="noopener noreferrer">
-            <h3>Art of Science</h3>
-            <p class="convergence-medium">Materials research as visual art</p>
-            <p class="convergence-note">An annual exhibition bridging graduate materials research and sculptural output.</p>
-            <p class="convergence-loc">Stanford Materials Research Society</p>
-          </a>
-        </div>
-      </section>
-
-      <!-- ====================================== 07 · the work ledger -->
-      <section class="section" id="ledger" aria-labelledby="ledger-title">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">07 / The Work Ledger</p>
-            <h2 id="ledger-title">Fund a <em>breakthrough</em>.</h2>
-          </div>
-          <p class="lede">
-            Every contribution is routed to a live deployment in the field.
-            Transparency is the substrate of our work.
-          </p>
-        </div>
-
-        <div class="ledger-grid">
-          <div class="ledger-panel">
-            <div class="ledger-top">
-              <span>LIVE SIGNAL · FIELD DEPLOYMENTS</span>
-              <span class="ledger-live"><span class="pulse-dot" aria-hidden="true"></span>TRANSMITTING</span>
-            </div>
-            <div class="ledger-row">
-              <div>
-                <div class="name">Atacama Desert</div>
-                <div class="detail">STRAIN &amp; THERMAL ARRAYS ACROSS THE SALT FLATS</div>
-              </div>
-              <div class="value">ACTIVE SENSORS · 412</div>
-            </div>
-            <div class="ledger-row">
-              <div>
-                <div class="name">Reykjanes Ridge</div>
-                <div class="detail">HYDROTHERMAL CRYSTALLINE GROWTH MONITORS</div>
-              </div>
-              <div class="value">ACTIVE SENSORS · 128</div>
-            </div>
-            <div class="ledger-row">
-              <div>
-                <div class="name">Tokyo Studio</div>
-                <div class="detail">ACOUSTIC-GLASS INSTALLATION IN RESIDENCE</div>
-              </div>
-              <div class="value">ACTIVE SENSORS · 64</div>
-            </div>
-            <div class="ledger-wave" id="ledger-wave" aria-hidden="true"></div>
-          </div>
-
-          <div class="ledger-side">
-            <a class="support-card" href="mailto:inquiries@openmatterlabs.org">
-              <div>
-                <div class="support-name">SPECIMEN TIER</div>
-                <div class="support-line">$250</div>
-                <div class="support-desc">Sponsor one sensor prototype.</div>
-              </div>
-              <span class="support-go" aria-hidden="true">→</span>
-            </a>
-            <a class="support-card" href="mailto:contact@openmatterlabs.org">
-              <div>
-                <div class="support-name">LATTICE TIER</div>
-                <div class="support-line">$2,500</div>
-                <div class="support-desc">Underwrite a residency material study.</div>
-              </div>
-              <span class="support-go" aria-hidden="true">→</span>
-            </a>
-            <a class="support-card" href="mailto:contact@openmatterlabs.org?subject=Foundation%20contribution">
-              <div>
-                <div class="support-name">FOUNDATION TIER</div>
-                <div class="support-line">$25,000</div>
-                <div class="support-desc">Endow a full artist–scientist residency.</div>
-              </div>
-              <span class="support-go" aria-hidden="true">→</span>
-            </a>
-            <p class="ledger-disclosure">100% ROUTED TO FIELD RESEARCH · PUBLIC-BENEFIT WORK · OPEN RESULTS</p>
           </div>
         </div>
-      </section>
-    </main>
-
-    <!-- ========================================= 08 · transmit / footer -->
-    <footer class="site-footer" id="contact">
-      <div class="footer-inner">
-        <div class="footer-cta">
-          <div>
-            <p class="eyebrow">08 / Transmit</p>
-            <h2>Begin a <em>residency</em>, or just listen in.</h2>
-            <!-- The address, printed plainly — no click required. -->
-            <p class="contact-plain">Contact: <a href="mailto:inquiries@openmatterlabs.org">inquiries@openmatterlabs.org</a></p>
-          </div>
-          <a class="contact-line" href="mailto:inquiries@openmatterlabs.org">
-            <span class="go" aria-hidden="true">→</span>
-            INQUIRIES@OPENMATTERLABS.ORG
-          </a>
+        <div class="specimen-caption">
+          <h3>Dendritic Growth</h3>
+          <span class="num">02</span>
         </div>
+        <p class="specimen-summary">Self-organising crystal branches that map acoustic vibration into visible form.</p>
+      </article>
 
-        <div class="footer-nodes">
-          <div class="nodes-top">
-            <span>WRITE TO THE LAB · 06 CHANNELS</span>
-            <span class="nodes-note">ALL ADDRESSES MONITORED</span>
-          </div>
-          <div class="nodes-row">
-            <a class="node-item" href="mailto:inquiries@openmatterlabs.org">
-              <span class="ndot" aria-hidden="true"></span>
-              <span>
-                <span class="nname">Inquiries</span>
-                <span class="ncoord">inquiries@openmatterlabs.org</span>
-              </span>
-            </a>
-            <a class="node-item" href="mailto:contact@openmatterlabs.org">
-              <span class="ndot" aria-hidden="true"></span>
-              <span>
-                <span class="nname">Contact</span>
-                <span class="ncoord">contact@openmatterlabs.org</span>
-              </span>
-            </a>
-            <a class="node-item" href="mailto:hq@openmatterlabs.org">
-              <span class="ndot" aria-hidden="true"></span>
-              <span>
-                <span class="nname">HQ</span>
-                <span class="ncoord">hq@openmatterlabs.org</span>
-              </span>
-            </a>
-            <a class="node-item" href="mailto:members@openmatterlabs.org">
-              <span class="ndot" aria-hidden="true"></span>
-              <span>
-                <span class="nname">Members</span>
-                <span class="ncoord">members@openmatterlabs.org</span>
-              </span>
-            </a>
-            <a class="node-item" href="https://github.com/vornvoskhq" target="_blank" rel="noopener noreferrer">
-              <span class="ndot" aria-hidden="true"></span>
-              <span>
-                <span class="nname">GitHub</span>
-                <span class="ncoord">github.com/vornvoskhq</span>
-              </span>
-            </a>
-            <a class="node-item" href="#dispatch">
-              <span class="ndot" aria-hidden="true"></span>
-              <span>
-                <span class="nname">Dispatch</span>
-                <span class="ncoord">openmatterlabs.org/#dispatch</span>
-              </span>
-            </a>
+      <article class="specimen">
+        <div class="specimen-frame">
+          <img src="/assets/refractive-glass.jpg" alt="Refractive Glass">
+          <div class="specimen-shade"></div>
+          <div class="specimen-id">GLS-03</div>
+          <div class="specimen-disc">OPTICS</div>
+          <div class="specimen-data">
+            <div class="specimen-data-grid">
+              <div><span>BANDS</span><strong>380&ndash;780 nm</strong></div>
+              <div><span>INDEX</span><strong>1.52</strong></div>
+              <div><span>LATENCY</span><strong>2.1 ms</strong></div>
+            </div>
           </div>
         </div>
+        <div class="specimen-caption">
+          <h3>Refractive Glass</h3>
+          <span class="num">03</span>
+        </div>
+        <p class="specimen-summary">Smart-glass composites splitting a single beam into a calibrated spectral signature.</p>
+      </article>
 
-        <div class="impact-nodes">
-          <div class="nodes-top"><span>GLOBAL IMPACT · 06 NODES</span><span class="nodes-note">HOVER A NODE</span></div>
-          <div class="impact-list">
-            <button type="button" title="Atacama strain arrays"><i></i><span>Antofagasta<small>23.6°S</small></span></button>
-            <button type="button" title="Ridge crystal growth"><i></i><span>Reykjavík<small>64.1°N</small></span></button>
-            <button type="button" title="Acoustic glass studio"><i></i><span>Tokyo<small>35.7°N</small></span></button>
-            <button type="button" title="Thermal lattice pilot"><i></i><span>Lagos<small>6.5°N</small></span></button>
-            <button type="button" title="Optics residency"><i></i><span>Zürich<small>47.4°N</small></span></button>
-            <button type="button" title="Carbon weave field"><i></i><span>São Paulo<small>23.5°S</small></span></button>
+      <article class="specimen">
+        <div class="specimen-frame">
+          <img src="/assets/carbon-weave.jpg" alt="Carbon Weave">
+          <div class="specimen-shade"></div>
+          <div class="specimen-id">CRB-04</div>
+          <div class="specimen-disc">STRUCTURAL</div>
+          <div class="specimen-data">
+            <div class="specimen-data-grid">
+              <div><span>TENSILE</span><strong>4.1 GPa</strong></div>
+              <div><span>GAUGE</span><strong>120 &Omega;</strong></div>
+              <div><span>FATIGUE</span><strong>10&#8310; cyc</strong></div>
+            </div>
           </div>
         </div>
+        <div class="specimen-caption">
+          <h3>Carbon Weave</h3>
+          <span class="num">04</span>
+        </div>
+        <p class="specimen-summary">Micro-filament weave sensing strain and torsion across architectural surfaces.</p>
+      </article>
+      </div>
 
-        <div class="footer-base">
-          <span class="brand-tag">
-            <span class="topbar-dot" aria-hidden="true"></span>
-            <strong>OPEN MATTER</strong>
-            <span>MATERIAL RESEARCH &amp; PUBLIC-BENEFIT LAB</span>
-          </span>
-          <span class="base-links">
-            <a href="https://github.com/vornvoskhq" target="_blank" rel="noopener noreferrer">GITHUB</a>
-            <a href="#dispatch">DISPATCH</a>
-            <a href="#reading">READING</a>
-            <a href="#top">TOP</a>
-          </span>
-          <span>© MMXXVI · ALL SIGNALS RESERVED</span>
+      <button class="gal-arrow gal-prev" id="archPrev" aria-label="Previous specimen">&larr;</button>
+      <button class="gal-arrow gal-next" id="archNext" aria-label="Next specimen">&rarr;</button>
+    </div>
+  </section>
+
+  <!-- scroll leeway: extra scroll distance pinned on card 2 -->
+  <div class="scroll-leeway" aria-hidden="true"></div>
+
+  <!-- CARD 3 — COLLABORATORY placeholder -->
+  <section class="collab">
+    <div class="collab-header">
+      <div>
+        <h2 class="section-title">From <em>signal</em> to substance.</h2>
+      </div>
+      <p class="section-desc">
+        Our residencies pair a scientist and an artist around one
+        material.
+      </p>
+    </div>
+
+    <div class="collab-grid">
+      <div class="contrib">
+        <div class="contrib-tag">RESIDENCY 01</div>
+        <h3 class="contrib-title">Bismuth Acoustics</h3>
+        <div class="contrib-pair">DR. L. OKAFOR &times; M. S&Oslash;RENSEN</div>
+        <p class="contrib-desc">Mapping crystal vibrations into a sound installation.</p>
+      </div>
+      <div class="contrib">
+        <div class="contrib-tag">RESIDENCY 02</div>
+        <h3 class="contrib-title">Atacama Tension</h3>
+        <div class="contrib-pair">DR. R. VEGA &times; A. HOSHINO</div>
+        <p class="contrib-desc">Strain sensors across desert salt flats become a light field.</p>
+      </div>
+      <div class="contrib">
+        <div class="contrib-tag">RESIDENCY 03</div>
+        <h3 class="contrib-title">Glass Refractions</h3>
+        <div class="contrib-pair">DR. N. BAUER &times; K. ADEYEMI</div>
+        <p class="contrib-desc">Spectral glass studies rendered as a walk-through prism.</p>
+      </div>
+    </div>
+
+    <div class="collab-bottom">
+      <div>
+        <div class="cell-tag">CONTACT</div>
+        <div class="cell-body">
+          <a class="cell-title cell-mail" href="mailto:contact@openmatterlabs.org">contact@openmatterlabs.org</a>
+          <div class="cell-sub">WE RESPOND WITHIN 48H</div>
         </div>
       </div>
-    </footer>
+      <div>
+        <div class="cell-tag">TIER 01</div>
+        <div class="cell-body">
+          <div class="cell-title">Supporter</div>
+          <div class="cell-sub">$10 / MO</div>
+        </div>
+      </div>
+      <div>
+        <div class="cell-tag">TIER 02</div>
+        <div class="cell-body">
+          <div class="cell-title">Patron</div>
+          <div class="cell-sub">$40 / MO</div>
+        </div>
+      </div>
+      <div>
+        <div class="cell-tag">TIER 03</div>
+        <div class="cell-body">
+          <div class="cell-title">Collector</div>
+          <div class="cell-sub">$120 / MO</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <script src="app.js" defer></script>
-  </body>
+  <script>
+    // Hold text entrance until webfonts are ready so nothing is seen in a
+    // fallback font (kills the multi-stage font-swap flash on first load)
+    (() => {
+      let done = false;
+      const arm = () => {
+        if (!done) { done = true; document.body.classList.add('fonts-ready'); }
+      };
+      if (document.fonts && document.fonts.load) {
+        Promise.all([
+          document.fonts.load('400 16px "Instrument Serif"'),
+          document.fonts.load('italic 400 16px "Instrument Serif"'),
+          document.fonts.load('300 16px "Inter"'),
+          document.fonts.load('400 16px "Inter"'),
+        ]).then(arm).catch(arm);
+      }
+      setTimeout(arm, 1500); // safety net if fonts stall
+    })();
+
+    // Re-trigger the hero text animations when scrolling back to card 1.
+    // (Sticky sections never leave the viewport geometrically, so an
+    // IntersectionObserver won't fire — we watch scroll position instead.)
+    (() => {
+      const hero = document.querySelector('.hero');
+      let armed = false;
+      window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        if (y > window.innerHeight * 0.6) {
+          armed = true; // user has left card 1
+        } else if (armed && y < window.innerHeight * 0.4) {
+          armed = false; // returning to card 1 — replay
+          hero.classList.remove('in-view');
+          void hero.offsetWidth; // force reflow so animations restart
+          hero.classList.add('in-view');
+        }
+      }, { passive: true });
+    })();
+
+    // Archive — overlay arrows + caption width synced to frame width
+    (() => {
+      const gallery = document.getElementById('gallery');
+      const prev = document.getElementById('archPrev');
+      const next = document.getElementById('archNext');
+      const cards = gallery.querySelectorAll('.specimen');
+
+      const step = () => {
+        const gap = parseFloat(getComputedStyle(gallery).columnGap) || 24;
+        return cards[0].offsetWidth + gap;
+      };
+
+      prev.addEventListener('click', () => gallery.scrollBy({ left: -step(), behavior: 'smooth' }));
+      next.addEventListener('click', () => gallery.scrollBy({ left: step(), behavior: 'smooth' }));
+
+      // frame width comes from flexed height + 3:4 ratio; cap it so exactly
+      // three cards (plus gaps) fit the viewport, then pin each column to
+      // its frame width so title/summary never overhang the image
+      const sync = () => {
+        const gap = parseFloat(getComputedStyle(gallery).columnGap) || 24;
+        const threeUp = Math.max(200, Math.floor((gallery.clientWidth - 2 * gap) / 3));
+        for (const card of cards) {
+          const frame = card.querySelector('.specimen-frame');
+          if (frame) {
+            frame.style.maxWidth = Math.min(threeUp, 380) + 'px';
+            card.style.width = frame.offsetWidth + 'px';
+          }
+        }
+      };
+      window.addEventListener('resize', sync);
+      window.addEventListener('load', sync);
+      sync();
+    })();
+
+  </script>
+</body>
 </html>
