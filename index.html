@@ -298,6 +298,7 @@
 
     @media (max-width: 640px) {
       .archive-header { grid-template-columns: 1fr; }
+      .specimen { width: min(45.6vw, 280px); }
       .gal-arrow { width: 2.25rem; height: 2.25rem; }
     }
 
@@ -836,7 +837,9 @@
         for (const card of cards) {
           const frame = card.querySelector('.specimen-frame');
           if (frame) {
-            frame.style.maxWidth = Math.min(threeUp, 280) + 'px';
+            frame.style.maxWidth = window.matchMedia('(max-width: 640px)').matches
+              ? 'none'
+              : Math.min(threeUp, 280) + 'px';
             card.style.width = frame.offsetWidth + 'px';
           }
         }
