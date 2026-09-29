@@ -1,1 +1,5 @@
 base44-reference/
+/build/
+*.egg-info/
+/.freebuff/
+*:Zone.Identifier
