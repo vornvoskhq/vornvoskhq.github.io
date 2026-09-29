@@ -66,7 +66,7 @@
     .hero .backdrop img {
       width: 100%; height: 100%;
       object-fit: cover;
-      opacity: 0.3;
+      opacity: 0.5;
       animation: crystallize 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
@@ -81,7 +81,7 @@
           transparent 0px, transparent 3px,
           rgba(242, 242, 242, 0.015) 3px, rgba(242, 242, 242, 0.015) 4px
         ),
-        linear-gradient(to bottom, rgba(8,8,10,0.66), rgba(8,8,10,0.46) 50%, #08080A);
+        linear-gradient(to bottom, rgba(8,8,10,0.52), rgba(8,8,10,0.34) 50%, rgba(8,8,10,0.82));
     }
 
     /* grain overlay */
@@ -98,7 +98,7 @@
        bright→dark jump mid-animation (the old 60% overshoot caused it) */
     @keyframes crystallize {
       0%   { filter: blur(24px) brightness(0.4); opacity: 0; transform: scale(1.08); }
-      100% { filter: blur(0) brightness(1); opacity: 0.3; transform: scale(1); }
+      100% { filter: blur(0) brightness(1); opacity: 0.5; transform: scale(1); }
     }
 
     /* ---- centered 2-cell table ---- */
@@ -167,10 +167,10 @@
       font-weight: 400;
       font-size: clamp(2.25rem, 4.5vw, 3.75rem);
       line-height: 1.05;
-      color: var(--steel);
+      color: var(--foreground);
       margin-bottom: 1rem;
     }
-    .labs-header em { font-style: italic; }
+    .labs-header em { color: var(--steel); font-style: italic; }
 
     /* hidden until webfonts load, then fades in — no visible font swap */
     .labs-header {
@@ -289,8 +289,7 @@
 
     .specimen {
       flex-shrink: 0;
-      width: max-content;
-      max-width: min(31vw, 380px);
+      width: min(24vw, 280px);
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -304,10 +303,10 @@
 
     .specimen-frame {
       position: relative;
-      flex: 1 1 0;
+      flex: 0 0 auto;
       min-height: 0;
-      max-width: min(32vw, 380px); /* safety cap on very tall windows */
-      aspect-ratio: 3 / 4; /* width derives from flexed height */
+      width: 100%;
+      aspect-ratio: 1 / 1;
       overflow: hidden;
       border-radius: 2px;
       border: 1px solid var(--border);
@@ -548,7 +547,7 @@
   <section class="archive" id="archive">
     <div class="archive-header">
       <div>
-        <h2 class="section-title">Research as <em>collectible</em> form.</h2>
+        <h2 class="section-title">Research as <em>measured</em> form.</h2>
       </div>
       <p class="section-desc">
         Each specimen is a sensor technology rendered as a fine-art
@@ -655,7 +654,7 @@
   <section class="collab">
     <div class="collab-header">
       <div>
-        <h2 class="section-title">From <em>signal</em> to substance.</h2>
+        <h2 class="section-title">From <em>signal</em> to substrate.</h2>
       </div>
       <p class="section-desc">
         Our residencies pair a scientist and an artist around one
@@ -689,7 +688,6 @@
         <div class="cell-tag">CONTACT</div>
         <div class="cell-body">
           <a class="cell-title cell-mail" href="mailto:contact@openmatterlabs.org">contact@openmatterlabs.org</a>
-          <div class="cell-sub">WE RESPOND WITHIN 48H</div>
         </div>
       </div>
       <div>
@@ -754,6 +752,66 @@
       }, { passive: true });
     })();
 
+    // Laptop keyboard navigation between the three sticky full-screen cards.
+    // Use section start positions so the card-2 scroll leeway doesn't count as
+    // a fourth state. Leave arrow keys to focused controls and the carousel.
+    (() => {
+      const cards = Array.from(document.querySelectorAll('body > section'));
+      let cardTops = [];
+      let currentCard = 0;
+
+      // Sticky sections have moving visual positions. Derive their stable
+      // document anchors from normal body flow, including the scroll leeway.
+      const measureCardTops = () => {
+        let documentTop = 0;
+        let cardIndex = 0;
+        cardTops = [];
+        for (const child of document.body.children) {
+          if (child === cards[cardIndex]) {
+            cardTops.push(documentTop);
+            cardIndex += 1;
+          }
+          documentTop += child.offsetHeight;
+        }
+      };
+      measureCardTops();
+      window.addEventListener('resize', measureCardTops);
+
+      const updateCurrentCard = () => {
+        const scrollPosition = window.scrollY + 1;
+        currentCard = cardTops.reduce((activeIndex, top, index) =>
+          top <= scrollPosition ? index : activeIndex, 0);
+      };
+
+      window.addEventListener('keydown', (event) => {
+        if (!['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(event.key) || event.altKey || event.ctrlKey || event.metaKey) return;
+        const target = event.target;
+        if (target instanceof Element && target.closest('input, textarea, select, button, a, [contenteditable="true"]')) return;
+
+        updateCurrentCard();
+        if (currentCard === 1 && ['ArrowLeft', 'ArrowRight'].includes(event.key)) {
+          const gallery = document.getElementById('gallery');
+          const specimens = gallery.querySelectorAll('.specimen');
+          const gap = parseFloat(getComputedStyle(gallery).columnGap) || 24;
+          const step = (specimens[0]?.offsetWidth || 0) + gap;
+          if (step > gap) {
+            event.preventDefault();
+            gallery.scrollBy({ left: event.key === 'ArrowRight' ? step : -step, behavior: 'smooth' });
+          }
+          return;
+        }
+
+        if (!['ArrowDown', 'ArrowUp'].includes(event.key)) return;
+        event.preventDefault();
+        const direction = event.key === 'ArrowDown' ? 1 : -1;
+        const nextCard = Math.max(0, Math.min(cards.length - 1, currentCard + direction));
+        if (nextCard === currentCard) return;
+
+        currentCard = nextCard;
+        window.scrollTo({ top: cardTops[currentCard], behavior: 'smooth' });
+      });
+    })();
+
     // Archive — overlay arrows + caption width synced to frame width
     (() => {
       const gallery = document.getElementById('gallery');
@@ -769,16 +827,16 @@
       prev.addEventListener('click', () => gallery.scrollBy({ left: -step(), behavior: 'smooth' }));
       next.addEventListener('click', () => gallery.scrollBy({ left: step(), behavior: 'smooth' }));
 
-      // frame width comes from flexed height + 3:4 ratio; cap it so exactly
-      // three cards (plus gaps) fit the viewport, then pin each column to
-      // its frame width so title/summary never overhang the image
+      // Let frames use the available width while keeping three cards in view,
+      // then pin each column to its frame width so captions stay aligned.
+      // The frame's 1:1 aspect ratio keeps its height equal to its width.
       const sync = () => {
         const gap = parseFloat(getComputedStyle(gallery).columnGap) || 24;
         const threeUp = Math.max(200, Math.floor((gallery.clientWidth - 2 * gap) / 3));
         for (const card of cards) {
           const frame = card.querySelector('.specimen-frame');
           if (frame) {
-            frame.style.maxWidth = Math.min(threeUp, 380) + 'px';
+            frame.style.maxWidth = Math.min(threeUp, 280) + 'px';
             card.style.width = frame.offsetWidth + 'px';
           }
         }
